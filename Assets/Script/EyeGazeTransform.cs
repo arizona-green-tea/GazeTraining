@@ -91,6 +91,7 @@ public class EyeGazeTransform : MonoBehaviour
                 phaseNum = 3;
                 timeRemaining = 5.0f;
                 stage = 1;
+                timerOn = false;
             }
         }
 
@@ -108,7 +109,7 @@ public class EyeGazeTransform : MonoBehaviour
                 right.transform.position = eyeDataCol.worldPosR;
             }
 
-            if (timeRemaining > 0)
+            if (timeRemaining > 0 && timerOn)
             {
                 timeRemaining -= Time.deltaTime;
                 for (int i = 1; i <= 4; i++) {
@@ -122,7 +123,7 @@ public class EyeGazeTransform : MonoBehaviour
                     }
                 }
             }
-            else
+            else if (timerOn)
             {
                 //lObjectName = eyeDataCol.hitInfoL.collider.gameObject.name;
                 //rObjectName = eyeDataCol.hitInfoR.collider.gameObject.name
@@ -135,7 +136,7 @@ public class EyeGazeTransform : MonoBehaviour
                 targets[stage-2].SetActive(false);
 
                 string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
-                for (int i = 1; i <= 4; i++) {
+                for (int i = 1; i <= 5; i++) {
                     GetCountdownAudio(audios[i-1]).Stop();
                 }
                 GetCountdownAudio(audios[4]).Play();
@@ -159,7 +160,15 @@ public class EyeGazeTransform : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.A))
             {
                 timeRemaining = 5.0f;
+                timerOn = false;
                 //Debug.Log("reset");
+            } else if (!timerOn) {
+                timerOn = true;
+                string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
+                for (int i = 1; i <= 5; i++) {
+                    GetCountdownAudio(audios[i-1]).Stop();
+                }
+                GetCountdownAudio(audios[4]).Play();
             }
 
             //Debug.Log(timeRemaining);
