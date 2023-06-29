@@ -18,9 +18,9 @@ public class EyeGazeTransform : MonoBehaviour
     public GameObject target5;
     public GameObject[] targets;
     public GameObject instruction;
-    public AudioSource[] countdown;
+    public AudioSource[] allAudio;
     private ViveSR.anipal.Eye.EyeDataCol eyeDataCol;
-    public float timeRemaining = 5.0f;
+    public float timeRemaining = 5.1f;
     public float timeRemainingInstruction = 10.0f;
     public bool timerOn = false;
     private Vector3 leftPos;
@@ -47,7 +47,7 @@ public class EyeGazeTransform : MonoBehaviour
         target4Default = target4.GetComponent<Renderer>().material.color;
         target5Default = target5.GetComponent<Renderer>().material.color;
 
-        countdown = target5.GetComponentsInChildren<AudioSource>();
+        allAudio = target5.GetComponentsInChildren<AudioSource>();
 
         startButton.SetActive(true);
         instruction.SetActive(false);
@@ -89,9 +89,10 @@ public class EyeGazeTransform : MonoBehaviour
                 // target4.GetComponent<Renderer>().material.color = target4Default;
                 // target5.GetComponent<Renderer>().material.color = target5Default;
                 phaseNum = 3;
-                timeRemaining = 5.0f;
+                timeRemaining = 5.1f;
                 stage = 1;
                 timerOn = false;
+                GetAudio("stage1Audio").Play();
             }
         }
 
@@ -112,13 +113,13 @@ public class EyeGazeTransform : MonoBehaviour
             if (timeRemaining > 0 && timerOn)
             {
                 timeRemaining -= Time.deltaTime;
-                for (int i = 1; i <= 4; i++) {
+                for (int i = 1; i <= 5; i++) {
                     if (timeRemaining < i && Time.deltaTime + timeRemaining >= i) {
                         // play the corresponding audio
                         string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
                         for (int j = 1; j <= 5; j++) {
-                            GetCountdownAudio(audios[j-1]).Stop();
-                            if(i == j) GetCountdownAudio(audios[j-1]).Play();
+                            GetAudio(audios[j-1]).Stop();
+                            if(i == j) GetAudio(audios[j-1]).Play();
                         }
                     }
                 }
@@ -127,19 +128,18 @@ public class EyeGazeTransform : MonoBehaviour
             {
                 //lObjectName = eyeDataCol.hitInfoL.collider.gameObject.name;
                 //rObjectName = eyeDataCol.hitInfoR.collider.gameObject.name
-                timeRemaining = 5.0f;
+                timeRemaining = 5.1f;
                 stage += 1;
                 if (stage == 6) {
                     phaseNum = 4;
+                    GetAudio("completionAudio").Play();
                     return;
                 }
                 targets[stage-2].SetActive(false);
 
-                string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
-                for (int i = 1; i <= 5; i++) {
-                    GetCountdownAudio(audios[i-1]).Stop();
-                }
-                GetCountdownAudio(audios[4]).Play();
+                GetAudio("stage" + stage.ToString() + "Audio").Play();
+
+                timerOn = false;
 
                 Debug.Log("Current stage: " + stage);
             }
@@ -159,16 +159,11 @@ public class EyeGazeTransform : MonoBehaviour
             // if (leftNum < stage || rightNum < stage)
             if (Input.GetKeyDown(KeyCode.A))
             {
-                timeRemaining = 5.0f;
+                timeRemaining = 5.1f;
                 timerOn = false;
                 //Debug.Log("reset");
-            } else if (!timerOn) {
+            } else if (!timerOn && !GetAudio("stage" + stage.ToString() + "Audio").isPlaying) {
                 timerOn = true;
-                string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
-                for (int i = 1; i <= 5; i++) {
-                    GetCountdownAudio(audios[i-1]).Stop();
-                }
-                GetCountdownAudio(audios[4]).Play();
             }
 
             //Debug.Log(timeRemaining);
@@ -179,8 +174,8 @@ public class EyeGazeTransform : MonoBehaviour
         }
     }
 
-    AudioSource GetCountdownAudio(string name) {
-        foreach (AudioSource a in countdown) {
+    AudioSource GetAudio(string name) {
+        foreach (AudioSource a in allAudio) {
             if (a.name == name) return a;
         }
         return null;
