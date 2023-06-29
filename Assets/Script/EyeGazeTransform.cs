@@ -16,10 +16,12 @@ public class EyeGazeTransform : MonoBehaviour
     public GameObject target3;
     public GameObject target4;
     public GameObject target5;
+    public GameObject[] targets;
     public GameObject instruction;
+    public AudioSource[] countdown;
     private ViveSR.anipal.Eye.EyeDataCol eyeDataCol;
     public float timeRemaining = 5.0f;
-    public float timeRemainingInstruction = 51.0f;
+    public float timeRemainingInstruction = 10.0f;
     public bool timerOn = false;
     private Vector3 leftPos;
     private Vector3 rightPos;
@@ -35,6 +37,8 @@ public class EyeGazeTransform : MonoBehaviour
 
     void Start()
     {
+        // instructionsAudio = AudioSource.Find("instructionsAudio");
+        targets = new GameObject[]{target1, target2, target3, target4, target5};
         instruction = GameObject.Find("Instruction");
         eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
         target1Default = target1.GetComponent<Renderer>().material.color;
@@ -42,6 +46,8 @@ public class EyeGazeTransform : MonoBehaviour
         target3Default = target3.GetComponent<Renderer>().material.color;
         target4Default = target4.GetComponent<Renderer>().material.color;
         target5Default = target5.GetComponent<Renderer>().material.color;
+
+        countdown = target5.GetComponentsInChildren<AudioSource>();
 
         startButton.SetActive(true);
         instruction.SetActive(false);
@@ -53,15 +59,16 @@ public class EyeGazeTransform : MonoBehaviour
     void Update()
     {
         // first phase, with the user not yet viewing the start button
-        if (phaseNum == 1 && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton"))
-        {
+        // TODO: add this back
+        // if (phaseNum == 1 && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton"))
+        if (phaseNum == 1 && Input.GetKeyDown(KeyCode.A)) {
             Debug.Log("Starting game...");
             startButton.SetActive(false);
             target.SetActive(false);
             instruction.SetActive(true);
-            target1.GetComponent<Renderer>().material.color = Color.red;
+            // target1.GetComponent<Renderer>().material.color = Color.red;
             phaseNum = 2;
-            timeRemainingInstruction = 51.0f;
+            timeRemainingInstruction = 10.0f;
         }
 
         // second phase, with the user reading the instructions
@@ -75,12 +82,15 @@ public class EyeGazeTransform : MonoBehaviour
             else
             {
                 instruction.SetActive(false);
-                target1.GetComponent<Renderer>().material.color = target1Default;
-                target2.GetComponent<Renderer>().material.color = target2Default;
-                target3.GetComponent<Renderer>().material.color = target3Default;
-                target4.GetComponent<Renderer>().material.color = target4Default;
-                target5.GetComponent<Renderer>().material.color = target5Default;
+                target.SetActive(true);
+                // target1.GetComponent<Renderer>().material.color = target1Default;
+                // target2.GetComponent<Renderer>().material.color = target2Default;
+                // target3.GetComponent<Renderer>().material.color = target3Default;
+                // target4.GetComponent<Renderer>().material.color = target4Default;
+                // target5.GetComponent<Renderer>().material.color = target5Default;
                 phaseNum = 3;
+                timeRemaining = 5.0f;
+                stage = 1;
             }
         }
 
@@ -101,6 +111,16 @@ public class EyeGazeTransform : MonoBehaviour
             if (timeRemaining > 0)
             {
                 timeRemaining -= Time.deltaTime;
+                for (int i = 1; i <= 4; i++) {
+                    if (timeRemaining < i && Time.deltaTime + timeRemaining >= i) {
+                        // play the corresponding audio
+                        string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
+                        for (int j = 1; j <= 5; j++) {
+                            GetCountdownAudio(audios[j-1]).Stop();
+                            if(i == j) GetCountdownAudio(audios[j-1]).Play();
+                        }
+                    }
+                }
             }
             else
             {
@@ -108,6 +128,18 @@ public class EyeGazeTransform : MonoBehaviour
                 //rObjectName = eyeDataCol.hitInfoR.collider.gameObject.name
                 timeRemaining = 5.0f;
                 stage += 1;
+                if (stage == 6) {
+                    phaseNum = 4;
+                    return;
+                }
+                targets[stage-2].SetActive(false);
+
+                string[] audios = new string[] {"oneAudio", "twoAudio", "threeAudio", "fourAudio", "fiveAudio"};
+                for (int i = 1; i <= 4; i++) {
+                    GetCountdownAudio(audios[i-1]).Stop();
+                }
+                GetCountdownAudio(audios[4]).Play();
+
                 Debug.Log("Current stage: " + stage);
             }
             int leftNum = -1;
@@ -121,7 +153,10 @@ public class EyeGazeTransform : MonoBehaviour
                 int.TryParse(eyeDataCol.rObjectName.Substring(6), out rightNum);
             }
             //Debug.Log(Vector3.Distance(leftPos, eyeDataCol.worldPosL));
-            if (leftNum < stage || rightNum < stage)
+
+            // TODO: ADD THIS BACK
+            // if (leftNum < stage || rightNum < stage)
+            if (Input.GetKeyDown(KeyCode.A))
             {
                 timeRemaining = 5.0f;
                 //Debug.Log("reset");
@@ -133,5 +168,12 @@ public class EyeGazeTransform : MonoBehaviour
 
             //Debug.Log(eyeDataCol.worldPosL);
         }
+    }
+
+    AudioSource GetCountdownAudio(string name) {
+        foreach (AudioSource a in countdown) {
+            if (a.name == name) return a;
+        }
+        return null;
     }
 }
