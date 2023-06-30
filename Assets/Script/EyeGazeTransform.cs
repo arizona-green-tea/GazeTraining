@@ -36,12 +36,22 @@ public class EyeGazeTransform : MonoBehaviour
     Color target4Default;
     Color target5Default;
 
+    public bool connectedToVR = true;
+    public bool hasActiveUser = false;
+
     void Start()
     {
         // instructionsAudio = AudioSource.Find("instructionsAudio");
         targets = new GameObject[]{target1, target2, target3, target4, target5};
         instruction = GameObject.Find("Instruction");
-        cameraRig = GameObject.Find("[CameraRig]");
+        cameraRig = GameObject.Find("Camera");
+
+        if (connectedToVR)
+        {
+            target.transform.localScale = Vector3.Scale(target.transform.localScale, (new Vector3(1, 1, -1)));
+            instruction.transform.localScale = Vector3.Scale(instruction.transform.localScale, (new Vector3(-1, 1, 1)));
+            startButton.transform.localScale = Vector3.Scale(startButton.transform.localScale, (new Vector3(-1, 1, 1)));
+        }
         
         eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
         target1Default = target1.GetComponent<Renderer>().material.color;
@@ -70,9 +80,7 @@ public class EyeGazeTransform : MonoBehaviour
 
 
         // first phase, with the user not yet viewing the start button
-        // TODO: add this back
-        // if (phaseNum == 1 && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton"))
-        if (phaseNum == 1 && Input.GetKeyDown(KeyCode.A)) {
+        if (phaseNum == 1 && ((connectedToVR && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton")) || Input.GetKeyDown(KeyCode.A))) {
             Debug.Log("Starting game...");
             startButton.SetActive(false);
             target.SetActive(false);
@@ -161,8 +169,7 @@ public class EyeGazeTransform : MonoBehaviour
             //Debug.Log(Vector3.Distance(leftPos, eyeDataCol.worldPosL));
 
             // TODO: ADD THIS BACK
-            // if (leftNum < stage || rightNum < stage)
-            if (Input.GetKeyDown(KeyCode.A))
+            if ((connectedToVR && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A))
             {
                 timeRemaining = 5.1f;
                 timerOn = false;
@@ -181,7 +188,7 @@ public class EyeGazeTransform : MonoBehaviour
 
     void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
         obj.transform.eulerAngles = cameraAng;
-        distance = Quaternion.Euler(cameraAng.x, cameraAng.y, cameraAng.z) * distance;
+        distance = Quaternion.Euler(cameraAng.x, cameraAng.y + (connectedToVR ? 180 : 0), cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
     }
 }
