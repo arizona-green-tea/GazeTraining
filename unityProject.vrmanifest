@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.gazetraining1.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "C:\\Users\\HMD-Disparity\\Documents\\GazeTraining1\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\HMD-Disparity\\Documents\\GazeTraining\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "GazeTraining1 [Testing]"
