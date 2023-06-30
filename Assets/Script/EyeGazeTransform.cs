@@ -18,6 +18,7 @@ public class EyeGazeTransform : MonoBehaviour
     public GameObject target5;
     public GameObject[] targets;
     public GameObject instruction;
+    public GameObject cameraRig;
     public AudioSource[] allAudio;
     private ViveSR.anipal.Eye.EyeDataCol eyeDataCol;
     public float timeRemaining = 5.1f;
@@ -40,6 +41,8 @@ public class EyeGazeTransform : MonoBehaviour
         // instructionsAudio = AudioSource.Find("instructionsAudio");
         targets = new GameObject[]{target1, target2, target3, target4, target5};
         instruction = GameObject.Find("Instruction");
+        cameraRig = GameObject.Find("[CameraRig]");
+        
         eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
         target1Default = target1.GetComponent<Renderer>().material.color;
         target2Default = target2.GetComponent<Renderer>().material.color;
@@ -58,6 +61,14 @@ public class EyeGazeTransform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector3 cameraPos = cameraRig.transform.position;
+        Vector3 cameraAng = cameraRig.transform.localRotation.eulerAngles;
+
+        moveToView(cameraPos, cameraAng, startButton, new Vector3(0, 0, -60));
+        moveToView(cameraPos, cameraAng, instruction, new Vector3(45, 0, -50));
+        moveToView(cameraPos, cameraAng, target, new Vector3(0, 0, -60));
+
+
         // first phase, with the user not yet viewing the start button
         // TODO: add this back
         // if (phaseNum == 1 && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton"))
@@ -66,7 +77,6 @@ public class EyeGazeTransform : MonoBehaviour
             startButton.SetActive(false);
             target.SetActive(false);
             instruction.SetActive(true);
-            // target1.GetComponent<Renderer>().material.color = Color.red;
             phaseNum = 2;
             timeRemainingInstruction = 10.0f;
         }
@@ -83,11 +93,6 @@ public class EyeGazeTransform : MonoBehaviour
             {
                 instruction.SetActive(false);
                 target.SetActive(true);
-                // target1.GetComponent<Renderer>().material.color = target1Default;
-                // target2.GetComponent<Renderer>().material.color = target2Default;
-                // target3.GetComponent<Renderer>().material.color = target3Default;
-                // target4.GetComponent<Renderer>().material.color = target4Default;
-                // target5.GetComponent<Renderer>().material.color = target5Default;
                 phaseNum = 3;
                 timeRemaining = 5.1f;
                 stage = 1;
@@ -161,16 +166,9 @@ public class EyeGazeTransform : MonoBehaviour
             {
                 timeRemaining = 5.1f;
                 timerOn = false;
-                //Debug.Log("reset");
             } else if (!timerOn && !GetAudio("stage" + stage.ToString() + "Audio").isPlaying) {
                 timerOn = true;
             }
-
-            //Debug.Log(timeRemaining);
-
-            //Debug.Log(leftPos);
-
-            //Debug.Log(eyeDataCol.worldPosL);
         }
     }
 
@@ -179,5 +177,11 @@ public class EyeGazeTransform : MonoBehaviour
             if (a.name == name) return a;
         }
         return null;
+    }
+
+    void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
+        obj.transform.eulerAngles = cameraAng;
+        distance = Quaternion.Euler(cameraAng.x, cameraAng.y, cameraAng.z) * distance;
+        obj.transform.position = cameraPos + distance;
     }
 }
