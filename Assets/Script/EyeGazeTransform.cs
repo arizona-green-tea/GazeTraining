@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using ViveSR.anipal.Eye;
+using System;
 
 public class EyeGazeTransform : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class EyeGazeTransform : MonoBehaviour
     Color target4Default;
     Color target5Default;
 
-    public bool connectedToVR = true;
+    public bool vrConnected = false;
     public bool hasActiveUser = false;
 
     void Start()
@@ -46,7 +47,7 @@ public class EyeGazeTransform : MonoBehaviour
         instruction = GameObject.Find("Instruction");
         cameraRig = GameObject.Find("Camera");
 
-        if (connectedToVR)
+        if (vrConnected)
         {
             target.transform.localScale = Vector3.Scale(target.transform.localScale, (new Vector3(1, 1, -1)));
             instruction.transform.localScale = Vector3.Scale(instruction.transform.localScale, (new Vector3(-1, 1, 1)));
@@ -75,12 +76,12 @@ public class EyeGazeTransform : MonoBehaviour
         Vector3 cameraAng = cameraRig.transform.localRotation.eulerAngles;
 
         moveToView(cameraPos, cameraAng, startButton, new Vector3(0, 0, -60));
-        moveToView(cameraPos, cameraAng, instruction, new Vector3(45, 0, -50));
-        moveToView(cameraPos, cameraAng, target, new Vector3(0, 0, -60));
+        moveToView(cameraPos, cameraAng, instruction, new Vector3(0, 0, -50));
+        moveToView(cameraPos, cameraAng, target, new Vector3(0, 0, -200), -15, 15);
 
 
         // first phase, with the user not yet viewing the start button
-        if (phaseNum == 1 && ((connectedToVR && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton")) || Input.GetKeyDown(KeyCode.A))) {
+        if (phaseNum == 1 && ((vrConnected && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton")) || Input.GetKeyDown(KeyCode.A))) {
             Debug.Log("Starting game...");
             startButton.SetActive(false);
             target.SetActive(false);
@@ -169,7 +170,7 @@ public class EyeGazeTransform : MonoBehaviour
             //Debug.Log(Vector3.Distance(leftPos, eyeDataCol.worldPosL));
 
             // TODO: ADD THIS BACK
-            if ((connectedToVR && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A))
+            if ((vrConnected && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A))
             {
                 timeRemaining = 5.1f;
                 timerOn = false;
@@ -188,7 +189,20 @@ public class EyeGazeTransform : MonoBehaviour
 
     void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
         obj.transform.eulerAngles = cameraAng;
-        distance = Quaternion.Euler(cameraAng.x, cameraAng.y + (connectedToVR ? 180 : 0), cameraAng.z) * distance;
+        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, cameraAng.z) * distance;
+        obj.transform.position = cameraPos + distance;
+    }
+
+    void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, float xAng, float yAng) {
+        if (xAng == 0 && yAng == 0) {
+            moveToView(cameraPos, cameraAng, obj, distance);
+        }
+        
+        obj.transform.LookAt(cameraPos);
+
+        distance += new Vector3((float)(Math.Abs(distance.z) * Math.Tan(xAng * Math.PI/180)), (float)(Math.Abs(distance.z) * Math.Tan(yAng * Math.PI/180)), 0);
+        distance *= Math.Abs(distance.z)/distance.magnitude;
+        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, -cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
     }
 }
