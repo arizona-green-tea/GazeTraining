@@ -46,13 +46,6 @@ public class EyeGazeTransform : MonoBehaviour
         targets = new GameObject[]{target1, target2, target3, target4, target5};
         instruction = GameObject.Find("Instruction");
         cameraRig = GameObject.Find("Camera");
-
-        if (vrConnected)
-        {
-            target.transform.localScale = Vector3.Scale(target.transform.localScale, (new Vector3(1, 1, -1)));
-            instruction.transform.localScale = Vector3.Scale(instruction.transform.localScale, (new Vector3(-1, 1, 1)));
-            startButton.transform.localScale = Vector3.Scale(startButton.transform.localScale, (new Vector3(-1, 1, 1)));
-        }
         
         eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
         target1Default = target1.GetComponent<Renderer>().material.color;
