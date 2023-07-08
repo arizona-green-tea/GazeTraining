@@ -40,8 +40,7 @@ public class EyeGazeTransform : MonoBehaviour
     public bool vrConnected = false;
     public bool hasActiveUser = false;
 
-    void Start()
-    {
+    void Start() {
         // instructionsAudio = AudioSource.Find("instructionsAudio");
         targets = new GameObject[]{target1, target2, target3, target4, target5};
         instruction = GameObject.Find("Instruction");
@@ -63,15 +62,17 @@ public class EyeGazeTransform : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        Vector3 cameraPos = cameraRig.transform.position;
-        Vector3 cameraAng = cameraRig.transform.localRotation.eulerAngles;
-
-        moveToView(cameraPos, cameraAng, startButton, new Vector3(0, 0, -60));
-        moveToView(cameraPos, cameraAng, instruction, new Vector3(0, 0, -50));
-        moveToView(cameraPos, cameraAng, target, new Vector3(0, 0, -200), -15, 15);
-
+    void Update() {
+        // input: distance
+        moveStartButtonTo(60);
+        // input: distance
+        moveInstructionsTo(50);
+        // inputs:
+        // - distance
+        // - size visual angle (degrees)
+        // - horizontal angle (degrees, + to the right)
+        // - vertical angle (degrees, + upwards)
+        moveDartboardTo(100, 10, -15, 15);
 
         // first phase, with the user not yet viewing the start button
         if (phaseNum == 1 && ((vrConnected && (eyeDataCol.lObjectName == "StartButton" || eyeDataCol.rObjectName == "StartButton")) || Input.GetKeyDown(KeyCode.A))) {
@@ -84,15 +85,10 @@ public class EyeGazeTransform : MonoBehaviour
         }
 
         // second phase, with the user reading the instructions
-        if (phaseNum == 2)
-        {
-            if (timeRemainingInstruction > 0)
-            {
+        if (phaseNum == 2) {
+            if (timeRemainingInstruction > 0) {
                 timeRemainingInstruction -= Time.deltaTime;
-
-            }
-            else
-            {
+            } else {
                 instruction.SetActive(false);
                 target.SetActive(true);
                 phaseNum = 3;
@@ -106,19 +102,16 @@ public class EyeGazeTransform : MonoBehaviour
         // third and final phase, with the user trying to look at the dartboard
         if (phaseNum == 3)
         {
-            if (eyeDataCol.worldPosL != new Vector3(0, 0, 0))
-            {
+            if (eyeDataCol.worldPosL != new Vector3(0, 0, 0)) {
                 left.SetActive(true);
                 left.transform.position = eyeDataCol.worldPosL;
             }
-            if (eyeDataCol.worldPosR != new Vector3(0, 0, 0))
-            {
+            if (eyeDataCol.worldPosR != new Vector3(0, 0, 0)) {
                 right.SetActive(true);
                 right.transform.position = eyeDataCol.worldPosR;
             }
 
-            if (timeRemaining > 0 && timerOn)
-            {
+            if (timeRemaining > 0 && timerOn) {
                 timeRemaining -= Time.deltaTime;
                 for (int i = 1; i <= 5; i++) {
                     if (timeRemaining < i && Time.deltaTime + timeRemaining >= i) {
@@ -130,9 +123,7 @@ public class EyeGazeTransform : MonoBehaviour
                         }
                     }
                 }
-            }
-            else if (timerOn)
-            {
+            } else if (timerOn) {
                 //lObjectName = eyeDataCol.hitInfoL.collider.gameObject.name;
                 //rObjectName = eyeDataCol.hitInfoR.collider.gameObject.name
                 timeRemaining = 5.1f;
@@ -152,19 +143,16 @@ public class EyeGazeTransform : MonoBehaviour
             }
             int leftNum = -1;
             int rightNum = -1;
-            if (eyeDataCol.lObjectName.Length > 6)
-            {
+            if (eyeDataCol.lObjectName.Length > 6) {
                 int.TryParse(eyeDataCol.lObjectName.Substring(6), out leftNum);
             }
-            if (eyeDataCol.rObjectName.Length > 6)
-            {
+            if (eyeDataCol.rObjectName.Length > 6) {
                 int.TryParse(eyeDataCol.rObjectName.Substring(6), out rightNum);
             }
             //Debug.Log(Vector3.Distance(leftPos, eyeDataCol.worldPosL));
 
             // TODO: ADD THIS BACK
-            if ((vrConnected && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A))
-            {
+            if ((vrConnected && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A)) {
                 timeRemaining = 5.1f;
                 timerOn = false;
             } else if (!timerOn && !GetAudio("stage" + stage.ToString() + "Audio").isPlaying) {
@@ -173,6 +161,7 @@ public class EyeGazeTransform : MonoBehaviour
         }
     }
 
+    // Gets the correct audio clip from a list of all audio in the Unity scene
     AudioSource GetAudio(string name) {
         foreach (AudioSource a in allAudio) {
             if (a.name == name) return a;
@@ -180,13 +169,38 @@ public class EyeGazeTransform : MonoBehaviour
         return null;
     }
 
+    // Handles moving the start button to a certain distance away from the user
+    void moveStartButtonTo(float distance) {
+        moveToView(cameraRig.transform.position, cameraRig.transform.localRotation.eulerAngles,
+             startButton, new Vector3(0, 0, -distance));
+    }
+
+    // Handles moving the instructions to a certain distance away from the user
+    void moveInstructionsTo(float distance) {
+        moveToView(cameraRig.transform.position, cameraRig.transform.localRotation.eulerAngles,
+            instruction, new Vector3(0, 0, -distance));
+    }
+
+    // Handles the movement of the dartboard
+    // Inputs:
+    // distance - the distance of the dartboard from the user
+    // visualAngle - the size of the dartboard, in terms of visual angle (degrees)
+    // xAngle - the horizontal position of the dartboard, in visual angle (degrees)
+    // yAngle - the vertical position of the dartboard, in visual angle (degrees)
+    void moveDartboardTo(float distance, float visualAngle, float xAngle, float yAngle) {
+        moveToView(cameraRig.transform.position, cameraRig.transform.localRotation.eulerAngles,
+            target, new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+    }
+
+    // Used for start button / instructions - moves them right in front of the user, at the specified distance
     void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
         obj.transform.eulerAngles = cameraAng;
         distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
     }
 
-    void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, float xAng, float yAng) {
+    // Used for dartboard - moves it to the specified location relative to the user
+    void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, float visualAngle, float xAng, float yAng) {
         if (xAng == 0 && yAng == 0) {
             moveToView(cameraPos, cameraAng, obj, distance);
         }
@@ -197,5 +211,9 @@ public class EyeGazeTransform : MonoBehaviour
         distance *= Math.Abs(distance.z)/distance.magnitude;
         distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, -cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
+
+        float origSize = 54.8f;
+        float neededSize = (float)Math.Tan(visualAngle * Math.PI/180 * 1/2) * distance.magnitude * 2;
+        obj.transform.localScale = new Vector3(neededSize/origSize, neededSize/origSize, 1);
     }
 }
