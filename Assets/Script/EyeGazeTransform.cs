@@ -5,8 +5,7 @@ using UnityEngine.UI;
 using ViveSR.anipal.Eye;
 using System;
 
-public class EyeGazeTransform : MonoBehaviour
-{
+public class EyeGazeTransform : MonoBehaviour {
     // Start is called before the first frame update
     public GameObject left;
     public GameObject right;
@@ -25,17 +24,8 @@ public class EyeGazeTransform : MonoBehaviour
     public float timeRemaining = 5.1f;
     public float timeRemainingInstruction = 10.0f;
     public bool timerOn = false;
-    private Vector3 leftPos;
-    private Vector3 rightPos;
-    string lObjectName = "N/A";
-    string rObjectName = "N/A";
     int phaseNum = 1; // 1 = startButton has not been pressed yet, 2 = startButton pressed and instructions on, 3 = instructions done and testing
     int stage = 1; // the current dartboard level the user is on
-    Color target1Default;
-    Color target2Default;
-    Color target3Default;
-    Color target4Default;
-    Color target5Default;
 
     public bool vrConnected = false;
     public bool hasActiveUser = false;
@@ -47,12 +37,6 @@ public class EyeGazeTransform : MonoBehaviour
         cameraRig = GameObject.Find("Camera");
         
         eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
-        target1Default = target1.GetComponent<Renderer>().material.color;
-        target2Default = target2.GetComponent<Renderer>().material.color;
-        target3Default = target3.GetComponent<Renderer>().material.color;
-        target4Default = target4.GetComponent<Renderer>().material.color;
-        target5Default = target5.GetComponent<Renderer>().material.color;
-
         allAudio = target5.GetComponentsInChildren<AudioSource>();
 
         startButton.SetActive(true);
@@ -124,8 +108,6 @@ public class EyeGazeTransform : MonoBehaviour
                     }
                 }
             } else if (timerOn) {
-                //lObjectName = eyeDataCol.hitInfoL.collider.gameObject.name;
-                //rObjectName = eyeDataCol.hitInfoR.collider.gameObject.name
                 timeRemaining = 5.1f;
                 stage += 1;
                 if (stage == 6) {
@@ -149,9 +131,7 @@ public class EyeGazeTransform : MonoBehaviour
             if (eyeDataCol.rObjectName.Length > 6) {
                 int.TryParse(eyeDataCol.rObjectName.Substring(6), out rightNum);
             }
-            //Debug.Log(Vector3.Distance(leftPos, eyeDataCol.worldPosL));
 
-            // TODO: ADD THIS BACK
             if ((vrConnected && hasActiveUser && (leftNum < stage || rightNum < stage)) || Input.GetKeyDown(KeyCode.A)) {
                 timeRemaining = 5.1f;
                 timerOn = false;
