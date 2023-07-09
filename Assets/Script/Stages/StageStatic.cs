@@ -18,6 +18,13 @@ public static class StageStatic {
         EyeDataCol = eyeDataCollection;
     }
 
+    // Stops all audio currently playing
+    public static void stopAllAudio() {
+        foreach (KeyValuePair<string, AudioSource> audio in Audios) {
+            audio.Value.Stop();
+        }
+    }
+
     // Handles moving the start button to a certain distance away from the user
     public static void moveStartButtonTo(float distance) {
         moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
