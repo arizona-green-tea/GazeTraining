@@ -2,7 +2,7 @@ public class StageList : Stage {
     private Stage[] stages;
     private int index;
     public StageList(params Stage[] allStages) { stages = allStages; }
-    public override void start() { index = 0; }
+    public override void start() { index = 0; if (stages.Length > 0) stages[index].start(); }
     public override void update() {
         if (!stages[index].finished()) {
             stages[index].update();
