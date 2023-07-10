@@ -29,11 +29,14 @@ public class GeneralTargetStage : Stage {
         StageStatic.GameObjects["target"].SetActive(true);
         timeElapsedTotal = 0;
         timeElapsedUser = 0;
+        StageStatic.moveDartboardTo(distance, size, xAng, yAng);
     }
     public override void update() {
         timeElapsedTotal += Time.deltaTime;
 
-        StageStatic.moveDartboardTo(distance, size, xAng, yAng);
+        if (!StageStatic.relativeToWorld) {
+            StageStatic.moveDartboardTo(distance, size, xAng, yAng);
+        }
 
         if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0)) {
             StageStatic.GameObjects["left"].SetActive(true);

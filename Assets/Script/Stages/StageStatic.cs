@@ -9,7 +9,9 @@ public static class StageStatic {
     public static Dictionary<string, GameObject> GameObjects;
     public static Dictionary<string, AudioSource> Audios;
     public static ViveSR.anipal.Eye.EyeDataCol EyeDataCol;
-    public static bool hasActiveUser;
+    public static bool hasActiveUser = false;
+    // Stores if the dartboard will be positioned relative to the world (val: true) or user (val: false)
+    public static bool relativeToWorld = false;
 
     public static void setInformation(Dictionary<string, GameObject> allGameObjects, Dictionary<string, AudioSource> allAudio,
     ViveSR.anipal.Eye.EyeDataCol eyeDataCollection) {
