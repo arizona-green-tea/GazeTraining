@@ -9,6 +9,7 @@ public static class StageStatic {
     public static Dictionary<string, GameObject> GameObjects;
     public static Dictionary<string, AudioSource> Audios;
     public static ViveSR.anipal.Eye.EyeDataCol EyeDataCol;
+    public static Vector3 startingCameraPosition, startingCameraRotation;
     public static bool hasActiveUser = false;
     // Stores if the dartboard will be positioned relative to the world (val: true) or user (val: false)
     public static bool relativeToWorld = false;
@@ -46,8 +47,13 @@ public static class StageStatic {
     // xAngle - the horizontal position of the dartboard, in visual angle (degrees)
     // yAngle - the vertical position of the dartboard, in visual angle (degrees)
     public static void moveDartboardTo(float distance, float visualAngle, float xAngle, float yAngle) {
-        moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-            GameObjects["target"], new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+        if (!relativeToWorld) {
+            moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
+                GameObjects["target"], new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+        } else {
+            moveToView(startingCameraPosition, startingCameraRotation,
+                GameObjects["target"], new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+        }
     }
 
     // Used for start button / instructions - moves them right in front of the user, at the specified distance

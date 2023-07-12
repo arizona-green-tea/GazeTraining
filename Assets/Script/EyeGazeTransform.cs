@@ -11,15 +11,26 @@ public class EyeGazeTransform : MonoBehaviour {
     public GameObject right;
     public GameObject startButton;
     public GameObject target;
-    // public GameObject target1;
-    // public GameObject target2;
-    // public GameObject target3;
-    // public GameObject target4;
-    // public GameObject target5;
-    
     StageList phases;
+    int experimentNum;
+    char experimentPart;
 
     void Start() {
+        setUpInformation();
+
+        // 1 = chinrest
+        // 2 = fixed relative to head
+        // 3 = fixed relative to world
+        setExperimentNumber(1);
+        // A = changing size, distance stays constant
+        // B = changing distance, size stays constant
+        // C = (to be implemented) target moving and changing size/distance/speed
+        setExperimentPart('C');
+
+        startExperiment();
+    }
+
+    void setUpInformation() {
         GameObject instructions = GameObject.Find("Instruction");
         GameObject cameraRig = GameObject.Find("Camera");
         GameObject audioGameObject = GameObject.Find("AllAudio");
@@ -40,22 +51,49 @@ public class EyeGazeTransform : MonoBehaviour {
             audios[aud.name] = aud;
         }
         StageStatic.setInformation(gameObjects, audios, eyeDataCol);
+    }
+    void setExperimentNumber(int num) { experimentNum = num; }
+    void setExperimentPart(char part) { experimentPart = part; }
+    void startExperiment() {
+        if (experimentNum == 1) {
+            StageStatic.relativeToWorld = false;
+        } else if (experimentNum == 2) {
+            StageStatic.relativeToWorld = false;
+        } else if (experimentNum == 3) {
+            StageStatic.relativeToWorld = true;
+        } else {
+            throw new Exception("Experiment number out of range");
+        }
 
-        // phases = new StageList(
-        //     new StartButtonStage(),
-        //     new InstructionStage(),
-        //     new CodesegStage(() => {audios["stage1Audio"].Play();}, () => {return !audios["stage1Audio"].isPlaying;}),
-        //     new GeneralTargetStage(100, 10, -15, 15, 5, 30),
-        //     new CodesegStage(() => {audios["completionAudio"].Play();}, () => {return !audios["completionAudio"].isPlaying;})
-        // );
-        phases = new StageList(
-            new StartButtonStage(),
-            new InstructionStage(),
-            ImportantStages.binarySearchFinalDistance(
-                new GeneralTargetStage(100, 10, -15, 15, 2, 5), 5, 45, 1
-            )
-        );
-
+        if (experimentPart == 'A') {
+            phases = new StageList(
+                new StartButtonStage(),
+                new InstructionStage(),
+                ImportantStages.binarySearchFinalSize(
+                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 5, 45, 1
+                )
+            );
+        } else if (experimentPart == 'B') {
+            phases = new StageList(
+                new StartButtonStage(),
+                new InstructionStage(),
+                ImportantStages.binarySearchFinalDistance(
+                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 10, 1000, 1
+                )
+            );
+        } else if (experimentPart == 'C') {
+            phases = new StageList(
+                new StartButtonStage(),
+                new InstructionStage(),
+                ImportantStages.movingTargetChangingDis(5, 20, 20,
+                    (float t) => {return 50 + 10 * (float)Math.Sin(t * 2 * Math.PI/5);},
+                    (float t) => {return -30 + 60 * (t/20);},
+                    (float t) => {return 30 - 60 * (t/20);}
+                )
+            );
+        } else {
+            throw new Exception("Experiment part out of range");
+        }
         phases.start();
     }
 

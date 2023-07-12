@@ -6,9 +6,11 @@ using ViveSR.anipal.Eye;
 using System;
 
 public class GeneralTargetStage : Stage {
-    private float timeElapsedTotal, timeElapsedUser;
+    public float timeElapsedTotal, timeElapsedUser;
     private float distance, size, xAng, yAng, userViewTime, maxTime; 
     public bool userSucceeded;
+    private Vector3 stCamPos, stCamRot;
+
     public GeneralTargetStage(float distance, float size, float xAng, float yAng, float userViewTime, float maxTime) {
         this.distance = distance;
         this.size = size;
@@ -18,25 +20,37 @@ public class GeneralTargetStage : Stage {
         this.maxTime = maxTime;
     }
     public GeneralTargetStage getWithDistance(float dis) {
-        return new GeneralTargetStage(dis, size, xAng, yAng, userViewTime, maxTime);
+        return new GeneralTargetStage(dis,
+            (float)(180/Math.PI * 2 * (float)Math.Atan((float)Math.Tan(size * Math.PI/180 * 1/2) * distance/dis)),
+            xAng, yAng, userViewTime, maxTime);
     }
     public GeneralTargetStage getWithSize(float sz) {
         return new GeneralTargetStage(distance, sz, xAng, yAng, userViewTime, maxTime);
     }
+    public void setDistance(float dis) {
+        size = (float)(180/Math.PI * 2 * (float)Math.Atan((float)Math.Tan(size * Math.PI/180 * 1/2) * distance/dis));
+        this.distance = dis;
+        Debug.Log("Set distance");
+    }
+    public void setSize(float sz) {
+        this.size = sz;
+    }
+    public void setXAng(float xAng) { this.xAng = xAng; }
+    public void setYAng(float yAng) { this.yAng = yAng; }
     public override void start() {
         StageStatic.GameObjects["startButton"].SetActive(false);
         StageStatic.GameObjects["instructions"].SetActive(false);
         StageStatic.GameObjects["target"].SetActive(true);
         timeElapsedTotal = 0;
         timeElapsedUser = 0;
+        StageStatic.startingCameraPosition = StageStatic.GameObjects["camera"].transform.position;
+        StageStatic.startingCameraRotation = StageStatic.GameObjects["camera"].transform.localRotation.eulerAngles;
         StageStatic.moveDartboardTo(distance, size, xAng, yAng);
     }
     public override void update() {
         timeElapsedTotal += Time.deltaTime;
 
-        if (!StageStatic.relativeToWorld) {
-            StageStatic.moveDartboardTo(distance, size, xAng, yAng);
-        }
+        StageStatic.moveDartboardTo(distance, size, xAng, yAng);
 
         if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0)) {
             StageStatic.GameObjects["left"].SetActive(true);
