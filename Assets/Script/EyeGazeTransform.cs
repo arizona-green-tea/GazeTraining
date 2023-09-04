@@ -24,8 +24,8 @@ public class EyeGazeTransform : MonoBehaviour {
         setExperimentNumber(1);
         // A = changing size, distance stays constant
         // B = changing distance, size stays constant
-        // C = (to be implemented) target moving and changing size/distance/speed
-        setExperimentPart('C');
+        // C = target moving and changing size/distance/speed
+        setExperimentPart('B');
 
         startExperiment();
     }
@@ -70,16 +70,19 @@ public class EyeGazeTransform : MonoBehaviour {
                 new StartButtonStage(),
                 new InstructionStage(),
                 ImportantStages.binarySearchFinalSize(
-                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 5, 45, 1
+                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 1, 50, 1
                 )
             );
         } else if (experimentPart == 'B') {
             phases = new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.binarySearchFinalDistance(
-                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 10, 1000, 1
+                ImportantStages.threeDownOneUpFinalDistance(
+                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 1, 50, 1, 0
                 )
+                // ImportantStages.threeDownOneUpFinalDistance(
+                //     new GeneralTargetStage(100, 10, -15, 15, 2, 5), 10, 50, 1, 0
+                // )
             );
         } else if (experimentPart == 'C') {
             phases = new StageList(

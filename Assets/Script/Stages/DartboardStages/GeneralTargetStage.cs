@@ -24,6 +24,11 @@ public class GeneralTargetStage : Stage {
             (float)(180/Math.PI * 2 * (float)Math.Atan((float)Math.Tan(size * Math.PI/180 * 1/2) * distance/dis)),
             xAng, yAng, userViewTime, maxTime);
     }
+    public GeneralTargetStage getWithSizeAdjustDistance(float sz) {
+        return new GeneralTargetStage(
+            (float)(distance * (180.0f / (float)Math.PI * 2.0f * (float)Math.Atan((float)Math.Tan(sz * (float)Math.PI / 180.0f * 0.5f)) / sz)),
+            sz, xAng, yAng, userViewTime, maxTime);
+    }
     public GeneralTargetStage getWithSize(float sz) {
         return new GeneralTargetStage(distance, sz, xAng, yAng, userViewTime, maxTime);
     }
@@ -80,6 +85,7 @@ public class GeneralTargetStage : Stage {
             }
         }
     }
+    public float getSize() { return size; }
     private bool timePassedNumber() {
         return (timeElapsedUser - Time.deltaTime < Math.Truncate(timeElapsedUser));
     }

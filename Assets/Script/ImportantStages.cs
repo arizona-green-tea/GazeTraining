@@ -35,11 +35,11 @@ public static class ImportantStages {
         }
     }
     public static Stage binarySearchFinalDistance(GeneralTargetStage targetStage, float minDis, float maxDis, float precision) {
-        GeneralTargetStage newStage = targetStage.getWithDistance((minDis + maxDis)/2);
+        GeneralTargetStage newStage = targetStage.getWithSizeAdjustDistance((minDis + maxDis)/2);
         if (maxDis - minDis < precision) {
             return new StageList(
                 PlayAudio(StageStatic.Audios["smallestVisualAngleAudio"]),
-                PlayAudio(StageStatic.Audios["" + Math.Truncate(maxDis)]),
+                PlayAudio(StageStatic.Audios["" + Math.Truncate(newStage.getSize())]),
                 PlayAudio(StageStatic.Audios["degreesAudio"])
             );
         } else {
@@ -49,6 +49,38 @@ public static class ImportantStages {
                     () => {return newStage.userSucceeded;},
                     binarySearchFinalDistance(targetStage, minDis, (minDis + maxDis)/2, precision),
                     binarySearchFinalDistance(targetStage, (minDis + maxDis)/2, maxDis, precision)
+                )
+            );
+        }
+    }
+    public static Stage threeDownOneUpFinalDistance(GeneralTargetStage targetStage, float minDis, float maxDis, float precision, int currentSuccesses) {
+        GeneralTargetStage newStage = targetStage.getWithSizeAdjustDistance((minDis + maxDis)/2);
+        if (maxDis - minDis < precision) {
+            return new StageList(
+                PlayAudio(StageStatic.Audios["smallestVisualAngleAudio"]),
+                PlayAudio(StageStatic.Audios["" + Math.Truncate(newStage.getSize())]),
+                PlayAudio(StageStatic.Audios["degreesAudio"])
+            );
+        } else {
+            return new StageList(
+                newStage,
+                new DecisionStage(
+                    () => {
+                        return newStage.userSucceeded;
+                    },
+                    new DecisionStage(
+                        () => { return currentSuccesses == 2; },
+                        // threeDownOneUpFinalDistance(targetStage, minDis, maxDis, precision, 2),
+                        new FutureStage(() => {
+                            return threeDownOneUpFinalDistance(targetStage, minDis, minDis + 3 * (maxDis - minDis)/4, precision, 0);
+                        }),
+                        new FutureStage(() => {
+                            return threeDownOneUpFinalDistance(targetStage, minDis, maxDis, precision, currentSuccesses + 1);
+                        })
+                    ),
+                    new FutureStage(() => { 
+                        return threeDownOneUpFinalDistance(targetStage, minDis + (maxDis - minDis)/4, maxDis, precision, 0);
+                    })
                 )
             );
         }
