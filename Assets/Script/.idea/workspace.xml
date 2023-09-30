@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5c2ec761-0cc1-4506-ad82-6e78bd5dd1d1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/EyeGazeTransform.cs" beforeDir="false" afterPath="$PROJECT_DIR$/EyeGazeTransform.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ImportantStages.cs" beforeDir="false" afterPath="$PROJECT_DIR$/ImportantStages.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Stages/DartboardStages/GeneralTargetStage.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Stages/DartboardStages/GeneralTargetStage.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,19 +12,39 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Akhil-Agarwal-123"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="dac732aa-f1ee-4b7e-a787-b485a3a34eb2" />
+        <option name="url" value="https://github.com/SS1618/GazeTraining.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 8
+}]]></component>
   <component name="ProjectId" id="2UXaiQUUbn02ujwn3EZfzzzZVjF" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "git-widget-placeholder": "master",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -36,6 +54,7 @@
       <option name="presentableId" value="Default" />
       <updated>1693088509277</updated>
       <workItem from="1693088512894" duration="82000" />
+      <workItem from="1694321271910" duration="90000" />
     </task>
     <servers />
   </component>

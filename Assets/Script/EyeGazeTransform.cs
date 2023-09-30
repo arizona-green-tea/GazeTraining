@@ -11,34 +11,35 @@ public class EyeGazeTransform : MonoBehaviour {
     public GameObject right;
     public GameObject startButton;
     public GameObject target;
-    StageList phases;
-    int experimentNum;
-    char experimentPart;
+    private StageList _phases;
+    private int _experimentNum;
+    private char _experimentPart;
 
-    void Start() {
-        setUpInformation();
+    private void Start() {
+        SetUpInformation();
 
         // 1 = chinrest
         // 2 = fixed relative to head
         // 3 = fixed relative to world
-        setExperimentNumber(1);
+        SetExperimentNumber(1);
+        
         // A = changing size, distance stays constant
         // B = changing distance, size stays constant
         // C = target moving and changing size/distance/speed
-        setExperimentPart('B');
+        SetExperimentPart('B');
 
-        startExperiment();
+        StartExperiment();
     }
 
-    void setUpInformation() {
-        GameObject instructions = GameObject.Find("Instruction");
-        GameObject cameraRig = GameObject.Find("Camera");
-        GameObject audioGameObject = GameObject.Find("AllAudio");
-        AudioSource[] allAudio = audioGameObject.GetComponentsInChildren<AudioSource>();
+    private void SetUpInformation() {
+        var instructions = GameObject.Find("Instruction");
+        var cameraRig = GameObject.Find("Camera");
+        var audioGameObject = GameObject.Find("AllAudio");
+        var allAudio = audioGameObject.GetComponentsInChildren<AudioSource>();
         
-        ViveSR.anipal.Eye.EyeDataCol eyeDataCol = GetComponent<ViveSR.anipal.Eye.EyeDataCol>();
+        var eyeDataCol = GetComponent<EyeDataCol>();
 
-        Dictionary<string, GameObject> gameObjects = new Dictionary<string, GameObject>{
+        var gameObjects = new Dictionary<string, GameObject>{
             {"left", left},
             {"right", right},
             {"camera", cameraRig},
@@ -46,62 +47,55 @@ public class EyeGazeTransform : MonoBehaviour {
             {"instructions", instructions},
             {"target", target},
         };
-        Dictionary<string, AudioSource> audios = new Dictionary<string, AudioSource>();
-        foreach (AudioSource aud in allAudio) {
+        var audios = new Dictionary<string, AudioSource>();
+        foreach (var aud in allAudio) {
             audios[aud.name] = aud;
         }
         StageStatic.setInformation(gameObjects, audios, eyeDataCol);
     }
-    void setExperimentNumber(int num) { experimentNum = num; }
-    void setExperimentPart(char part) { experimentPart = part; }
-    void startExperiment() {
-        if (experimentNum == 1) {
-            StageStatic.relativeToWorld = false;
-        } else if (experimentNum == 2) {
-            StageStatic.relativeToWorld = false;
-        } else if (experimentNum == 3) {
-            StageStatic.relativeToWorld = true;
-        } else {
-            throw new Exception("Experiment number out of range");
-        }
+    
+    private void SetExperimentNumber(int num) { _experimentNum = num; }
+    
+    private void SetExperimentPart(char part) { _experimentPart = part; }
+    
+    private void StartExperiment()
+    {
+        StageStatic.relativeToWorld = _experimentNum switch {
+            1 => false,
+            2 => false,
+            3 => true,
+            _ => throw new Exception("Experiment number out of range")
+        };
 
-        if (experimentPart == 'A') {
-            phases = new StageList(
+        _phases = _experimentPart switch {
+            'A' => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
                 ImportantStages.binarySearchFinalSize(
-                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 1, 50, 1
+                    new GeneralTargetStage(100, 10, 0, 0, 2, 5), 1, 50, 1
                 )
-            );
-        } else if (experimentPart == 'B') {
-            phases = new StageList(
+            ),
+            'B' => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.threeDownOneUpFinalDistance(
-                    new GeneralTargetStage(100, 10, -15, 15, 2, 5), 1, 50, 1, 0
-                )
-                // ImportantStages.threeDownOneUpFinalDistance(
-                //     new GeneralTargetStage(100, 10, -15, 15, 2, 5), 10, 50, 1, 0
-                // )
-            );
-        } else if (experimentPart == 'C') {
-            phases = new StageList(
+                ImportantStages.findThresholdForChangingDistance(0, 0, 2, 5, 80)
+            ),
+            'C' => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
                 ImportantStages.movingTargetChangingDis(5, 20, 20,
-                    (float t) => {return 50 + 10 * (float)Math.Sin(t * 2 * Math.PI/5);},
-                    (float t) => {return -30 + 60 * (t/20);},
-                    (float t) => {return 30 - 60 * (t/20);}
+                    t => 50 + 10 * Math.Sin(t * 2 * Math.PI/5),
+                    t => -30 + 60 * (t/20),
+                    t => 30 - 60 * (t/20)
                 )
-            );
-        } else {
-            throw new Exception("Experiment part out of range");
-        }
-        phases.start();
+            ),
+            _ => throw new Exception("Experiment part out of range")
+        };
+        
+        _phases.start();
     }
 
-    // Update is called once per frame
-    void Update() {
-        if (!phases.finished()) phases.update();
+    private void Update() {
+        if (!_phases.finished()) _phases.update();
     }
 }

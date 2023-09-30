@@ -29,15 +29,15 @@ public static class StageStatic {
     }
 
     // Handles moving the start button to a certain distance away from the user
-    public static void moveStartButtonTo(float distance) {
+    public static void moveStartButtonTo(double distance) {
         moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-            GameObjects["startButton"], new Vector3(0, 0, -distance));
+            GameObjects["startButton"], new Vector3(0, 0, (float)-distance));
     }
 
     // Handles moving the instructions to a certain distance away from the user
-    public static void moveInstructionsTo(float distance) {
+    public static void moveInstructionsTo(double distance) {
         moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-            GameObjects["instructions"], new Vector3(0, 0, -distance));
+            GameObjects["instructions"], new Vector3(0, 0, (float)-distance));
     }
 
     // Handles the movement of the dartboard
@@ -46,13 +46,13 @@ public static class StageStatic {
     // visualAngle - the size of the dartboard, in terms of visual angle (degrees)
     // xAngle - the horizontal position of the dartboard, in visual angle (degrees)
     // yAngle - the vertical position of the dartboard, in visual angle (degrees)
-    public static void moveDartboardTo(float distance, float visualAngle, float xAngle, float yAngle) {
+    public static void moveDartboardTo(double distance, double visualAngle, double xAngle, double yAngle) {
         if (!relativeToWorld) {
             moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-                GameObjects["target"], new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+                GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
         } else {
             moveToView(startingCameraPosition, startingCameraRotation,
-                GameObjects["target"], new Vector3(0, 0, -distance), visualAngle, -xAngle, yAngle);
+                GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
         }
     }
 
@@ -64,7 +64,7 @@ public static class StageStatic {
     }
 
     // Used for dartboard - moves it to the specified location relative to the user
-    private static void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, float visualAngle, float xAng, float yAng) {
+    private static void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, double visualAngle, double xAng, double yAng) {
         if (xAng == 0 && yAng == 0) {
             moveToView(cameraPos, cameraAng, obj, distance);
         }
@@ -76,8 +76,8 @@ public static class StageStatic {
         distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, -cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
 
-        float origSize = 54.8f;
-        float neededSize = (float)Math.Tan(visualAngle * Math.PI/180 * 1/2) * distance.magnitude * 2;
+        var origSize = 54.8f;
+        var neededSize = (float)Math.Tan(visualAngle * Math.PI/180 * 1/2) * distance.magnitude * 2;
         obj.transform.localScale = new Vector3(neededSize/origSize, neededSize/origSize, 1);
     }
 }

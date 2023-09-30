@@ -6,12 +6,12 @@ using ViveSR.anipal.Eye;
 using System;
 
 public class GeneralTargetStage : Stage {
-    public float timeElapsedTotal, timeElapsedUser;
-    private float distance, size, xAng, yAng, userViewTime, maxTime; 
+    public double timeElapsedTotal, timeElapsedUser;
+    private double distance, size, xAng, yAng, userViewTime, maxTime; 
     public bool userSucceeded;
     private Vector3 stCamPos, stCamRot;
 
-    public GeneralTargetStage(float distance, float size, float xAng, float yAng, float userViewTime, float maxTime) {
+    public GeneralTargetStage(double distance, double size, double xAng, double yAng, double userViewTime, double maxTime) {
         this.distance = distance;
         this.size = size;
         this.xAng = xAng;
@@ -19,29 +19,23 @@ public class GeneralTargetStage : Stage {
         this.userViewTime = userViewTime;
         this.maxTime = maxTime;
     }
-    public GeneralTargetStage getWithDistance(float dis) {
-        return new GeneralTargetStage(dis,
-            (float)(180/Math.PI * 2 * (float)Math.Atan((float)Math.Tan(size * Math.PI/180 * 1/2) * distance/dis)),
-            xAng, yAng, userViewTime, maxTime);
-    }
-    public GeneralTargetStage getWithSizeAdjustDistance(float sz) {
+    public GeneralTargetStage getWithSizeAdjustDistance(double sz) {
         return new GeneralTargetStage(
-            (float)(distance * (180.0f / (float)Math.PI * 2.0f * (float)Math.Atan((float)Math.Tan(sz * (float)Math.PI / 180.0f * 0.5f)) / sz)),
+            distance * (180 / Math.PI * 2 * Math.Atan(Math.Tan(sz * Math.PI / 180.0f * 0.5f)) / sz),
             sz, xAng, yAng, userViewTime, maxTime);
     }
-    public GeneralTargetStage getWithSize(float sz) {
+    public GeneralTargetStage getWithSize(double sz) {
         return new GeneralTargetStage(distance, sz, xAng, yAng, userViewTime, maxTime);
     }
-    public void setDistance(float dis) {
-        size = (float)(180/Math.PI * 2 * (float)Math.Atan((float)Math.Tan(size * Math.PI/180 * 1/2) * distance/dis));
-        this.distance = dis;
-        Debug.Log("Set distance");
+    public void setDistance(double dis) {
+        size = 180/Math.PI * 2 * Math.Atan(Math.Tan(size * Math.PI/180 * 1/2) * distance/dis);
+        distance = dis;
     }
-    public void setSize(float sz) {
-        this.size = sz;
+    public void setSize(double sz) {
+        size = sz;
     }
-    public void setXAng(float xAng) { this.xAng = xAng; }
-    public void setYAng(float yAng) { this.yAng = yAng; }
+    public void setXAng(double xAng) { this.xAng = xAng; }
+    public void setYAng(double yAng) { this.yAng = yAng; }
     public override void start() {
         StageStatic.GameObjects["startButton"].SetActive(false);
         StageStatic.GameObjects["instructions"].SetActive(false);
@@ -85,7 +79,7 @@ public class GeneralTargetStage : Stage {
             }
         }
     }
-    public float getSize() { return size; }
+    public double getSize() { return size; }
     private bool timePassedNumber() {
         return (timeElapsedUser - Time.deltaTime < Math.Truncate(timeElapsedUser));
     }
