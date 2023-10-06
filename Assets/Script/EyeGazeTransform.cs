@@ -26,7 +26,7 @@ public class EyeGazeTransform : MonoBehaviour {
         // A = changing size, distance stays constant
         // B = changing distance, size stays constant
         // C = target moving and changing size/distance/speed
-        SetExperimentPart('B');
+        SetExperimentPart('C');
 
         StartExperiment();
     }
@@ -71,14 +71,12 @@ public class EyeGazeTransform : MonoBehaviour {
             'A' => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.binarySearchFinalSize(
-                    new GeneralTargetStage(100, 10, 0, 0, 2, 5), 1, 50, 1
-                )
+                ImportantStages.findThreshold(0, 0, 2, 5, 80, false)
             ),
             'B' => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.findThresholdForChangingDistance(0, 0, 2, 5, 80)
+                ImportantStages.findThreshold(0, 0, 2, 5, 80, true)
             ),
             'C' => new StageList(
                 new StartButtonStage(),

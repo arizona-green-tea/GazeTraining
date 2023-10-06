@@ -30,34 +30,12 @@ public static class ImportantStages
     
     /**
      * Conducts binary search on the approximate size where the user can see the the dartboard
+     * Either changes distance or size, based on parameter input
      * Parameters: minimum size to check, maximum size to check, and precision of size (visual degrees)
      */
-    public static Stage binarySearchFinalSize(GeneralTargetStage targetStage, double minSize, double maxSize, double precision) {
-        var newStage = targetStage.getWithSize((minSize + maxSize)/2);
-        if (maxSize - minSize < precision) {
-            return new StageList(
-                PlayAudio(StageStatic.Audios["smallestVisualAngleAudio"]),
-                PlayAudio(StageStatic.Audios["" + Math.Truncate(maxSize)]),
-                PlayAudio(StageStatic.Audios["degreesAudio"])
-            );
-        }
-        return new StageList(
-            newStage,
-            new DecisionStage(
-                () => newStage.userSucceeded,
-                binarySearchFinalSize(targetStage, minSize, (minSize + maxSize)/2, precision),
-                binarySearchFinalSize(targetStage, (minSize + maxSize)/2, maxSize, precision)
-            )
-        );
-    }
-    
-    /**
-     * Conducts binary search on the approximate distance where the user can see the the dartboard
-     * Parameters: minimum size to check, maximum size to check, and precision of size (visual degrees)
-     */
-    private static Stage binarySearchFinalDistance(GeneralTargetStage targetStage, double minDis, double maxDis, double precision) {
-        var newStage = targetStage.getWithSizeAdjustDistance((minDis + maxDis)/2);
-        if (maxDis - minDis < precision)
+    private static Stage binarySearch(GeneralTargetStage targetStage, double minSize, double maxSize, double precision, bool changeDistance) {
+        var newStage = changeDistance ? targetStage.getWithSizeAdjustDistance((minSize + maxSize)/2) : targetStage.getWithSize((minSize + maxSize)/2);
+        if (maxSize - minSize < precision)
         {
             return new StageList(
                 new CodesegStage(() => binarySearchResult = newStage.getSize())
@@ -70,8 +48,8 @@ public static class ImportantStages
             newStage,
             new DecisionStage(
                 () => newStage.userSucceeded,
-                new FutureStage(() => binarySearchFinalDistance(targetStage, minDis, (minDis + maxDis)/2, precision)),
-                new FutureStage(() => binarySearchFinalDistance(targetStage, (minDis + maxDis)/2, maxDis, precision))
+                new FutureStage(() => binarySearch(targetStage, minSize, (minSize + maxSize)/2, precision, changeDistance)),
+                new FutureStage(() => binarySearch(targetStage, (minSize + maxSize)/2, maxSize, precision, changeDistance))
             )
         );
     }
@@ -79,9 +57,8 @@ public static class ImportantStages
     /**
      * Conducts three down one up for the approximate threshold which the user can see at __% of the time 
      */
-    private static Stage threeDownOneUpFinalDistance(GeneralTargetStage targetStage, double currentDistance, 
-        double percentage, int currentSuccesses, List<double> failedPlaces) {
-        var newStage = targetStage.getWithSizeAdjustDistance(currentDistance);
+    private static Stage threeDownOneUp(GeneralTargetStage targetStage, double currentSize, double percentage, int currentSuccesses, List<double> failedPlaces, bool changeDistance) {
+        var newStage = changeDistance ? targetStage.getWithSizeAdjustDistance(currentSize) : targetStage.getWithSize(currentSize);
         const double negativeStep = 1;
         var positiveStep = negativeStep * Math.Pow(percentage, 3) / (1 - Math.Pow(percentage, 3));
         
@@ -100,32 +77,33 @@ public static class ImportantStages
                 new DecisionStage(
                     () => currentSuccesses == 2,
                     new FutureStage(() => 
-                        threeDownOneUpFinalDistance(targetStage, currentDistance - positiveStep, percentage, 0, failedPlaces)
+                        threeDownOneUp(targetStage, currentSize - positiveStep, percentage, 0, failedPlaces, changeDistance)
                     ),
                     new FutureStage(() => 
-                        threeDownOneUpFinalDistance(targetStage, currentDistance, percentage, currentSuccesses + 1, failedPlaces)
+                        threeDownOneUp(targetStage, currentSize, percentage, currentSuccesses + 1, failedPlaces, changeDistance)
                     )
                 ),
                 new FutureStage(() =>
                 {
-                    failedPlaces.Add(currentDistance);
-                    return threeDownOneUpFinalDistance(targetStage, currentDistance + negativeStep, percentage, 0,
-                        failedPlaces);
+                    failedPlaces.Add(currentSize);
+                    return threeDownOneUp(targetStage, currentSize + negativeStep, percentage, 0,
+                        failedPlaces, changeDistance);
                 })
             )
         );
     }
 
-    public static Stage findThresholdForChangingDistance(double xAng, double yAng, double minTimeToView,
-        double timePerAttempt, double percentageCertainty) {
+    public static Stage findThreshold(double xAng, double yAng, double minTimeToView, double timePerAttempt, 
+        double percentageCertainty, bool changingDistance) {
         return new StageList(
-            binarySearchFinalDistance(
+            binarySearch(
                 new GeneralTargetStage(100, 10, xAng, yAng, minTimeToView, timePerAttempt),
-                1, 50, 1
+                1, 50, 1, changingDistance
             ),
-            new FutureStage(() => threeDownOneUpFinalDistance(
+            new FutureStage(() => threeDownOneUp(
                 new GeneralTargetStage(100, 10, xAng, yAng, minTimeToView, timePerAttempt),
-                binarySearchResult, percentageCertainty/100, 0, new List<double>()
+                binarySearchResult, percentageCertainty/100, 0, new List<double>(),
+                changingDistance
             ))
         );
     }
