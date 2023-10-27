@@ -13,6 +13,7 @@ public static class StageStatic {
     public static bool hasActiveUser = false;
     // Stores if the dartboard will be positioned relative to the world (val: true) or user (val: false)
     public static bool relativeToWorld = false;
+    public static float IPD = 0.03f;
 
     public static void setInformation(Dictionary<string, GameObject> allGameObjects, Dictionary<string, AudioSource> allAudio,
     ViveSR.anipal.Eye.EyeDataCol eyeDataCollection) {
@@ -79,5 +80,10 @@ public static class StageStatic {
         var origSize = 54.8f;
         var neededSize = (float)Math.Tan(visualAngle * Math.PI/180 * 1/2) * distance.magnitude * 2;
         obj.transform.localScale = new Vector3(neededSize/origSize, neededSize/origSize, 1);
+    }
+    
+    // Used to set the IPD to a certain amount (by the IPD stage)
+    public static void setIPD(float ipd) {
+        IPD = ipd;
     }
 }
