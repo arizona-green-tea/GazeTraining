@@ -134,7 +134,8 @@ namespace ViveSR
                     
 
                     camL = camC;
-                    camL.transform.position += new Vector3(-StageStatic.IPD, 0, 0);
+                    camL.transform.position = camL.transform.TransformPoint(-StageStatic.IPD, 0, 0);
+                    // camL.transform.position += new Vector3(-StageStatic.IPD, 0, 0);
                     Vector3 GazeDirectionTestL = camL.transform.TransformDirection(L_Direction);
                     if (Physics.Raycast(camL.transform.position, GazeDirectionTestL, out hitInfoL, 1000))
                     {
@@ -145,7 +146,8 @@ namespace ViveSR
                     }
 
                     camR = camC;
-                    camR.transform.position += new Vector3(StageStatic.IPD, 0, 0);
+                    camR.transform.position = camR.transform.TransformPoint(StageStatic.IPD, 0, 0);
+                    // camR.transform.position += new Vector3(StageStatic.IPD, 0, 0);
                     Vector3 GazeDirectionTestR = camR.transform.TransformDirection(R_Direction);
                     if (Physics.Raycast(camR.transform.position, GazeDirectionTestR, out hitInfoR, 1000))
                     {
