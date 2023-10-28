@@ -21,6 +21,7 @@ public class EyeGazeTransform : MonoBehaviour {
         
         // BEGIN: INSTRUCTIONS SPECIFIC TO EXPERIMENT
         SetExperiment(
+            true, // <-- This is whether or not there we are using the VR headset right now; false if remote testing
             DartboardPositioning.Chinrest, 
             DartboardMovementType.TargetMovingAndChangingDistance,
             true, // <-- Input whether or not you want to use the IPD calculator program.
@@ -54,7 +55,8 @@ public class EyeGazeTransform : MonoBehaviour {
         StageStatic.setInformation(gameObjects, audios, eyeDataCol);
     }
 
-    private void SetExperiment(DartboardPositioning positioning, DartboardMovementType movementType, bool testIpd, double ipd) {
+    private void SetExperiment(bool usingVRHeadset, DartboardPositioning positioning, DartboardMovementType movementType, bool testIpd, double ipd) {
+        StageStatic.hasActiveUser = usingVRHeadset;
         _dartboardPositioning = positioning;
         _dartboardMovementType = movementType;
         if (ipd > 0) StageStatic.IPD = (float) ipd;

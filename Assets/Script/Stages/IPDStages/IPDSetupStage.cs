@@ -32,6 +32,8 @@ public class IPDSetupStage : Stage
         var theta = Vector3.Angle(dir, StageStatic.EyeDataCol.camC.transform.forward);
         theta = Math.Abs(theta) * (float)Math.PI/180; // Based on left/right eye, just modify
         // Find the final amount based on this and set the final IPD to this
-        StageStatic.setIPD((float) Math.Tan(theta) * distance);
+        var ipd = (float)Math.Tan(theta) * distance;
+        Debug.Log("Calculated IPD: " + ipd);
+        StageStatic.setIPD(ipd);
     }
 }
