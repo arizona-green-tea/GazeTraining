@@ -14,17 +14,18 @@ public class EyeGazeTransform : MonoBehaviour {
     private StageList _phases;
     private DartboardPositioning _dartboardPositioning;
     private DartboardMovementType _dartboardMovementType;
-    private bool _testIpd;
+    private bool _testIpd, _usingLeftEye;
 
     private void Start() {
         SetUpInformation();
         
         // BEGIN: INSTRUCTIONS SPECIFIC TO EXPERIMENT
         SetExperiment(
-            true, // <-- This is whether or not there we are using the VR headset right now; false if remote testing
+            true, // <-- true if using the VR headset (in-person), false otherwise (remote testing)
             DartboardPositioning.Chinrest, 
             DartboardMovementType.TargetMovingAndChangingDistance,
             true, // <-- Input whether or not you want to use the IPD calculator program.
+            true, // <-- true if user will use left eye for the IPD test, false otherwise
             -1 // <-- This is the IPD. If known, input here. Otherwise, put -1.
         );
         // END: INSTRUCTIONS SPECIFIC TO EXPERIMENT
@@ -55,16 +56,17 @@ public class EyeGazeTransform : MonoBehaviour {
         StageStatic.setInformation(gameObjects, audios, eyeDataCol);
     }
 
-    private void SetExperiment(bool usingVRHeadset, DartboardPositioning positioning, DartboardMovementType movementType, bool testIpd, double ipd) {
+    private void SetExperiment(bool usingVRHeadset, DartboardPositioning positioning, 
+        DartboardMovementType movementType, bool testIpd, bool usingLeftEyeForIpdTest, double ipd) {
         StageStatic.hasActiveUser = usingVRHeadset;
         _dartboardPositioning = positioning;
         _dartboardMovementType = movementType;
+        _usingLeftEye = usingLeftEyeForIpdTest;
         if (ipd > 0) StageStatic.IPD = (float) ipd;
         _testIpd = testIpd;
     }
     
-    private void StartExperiment()
-    {
+    private void StartExperiment() {
         StageStatic.relativeToWorld = _dartboardPositioning switch {
             DartboardPositioning.Chinrest => false,
             DartboardPositioning.FixedRelativeToHead => false,
@@ -106,7 +108,7 @@ public class EyeGazeTransform : MonoBehaviour {
 
         if (_testIpd) {
             _phases = new StageList(
-                new IPDSetupStage(),
+                new IPDSetupStage(_usingLeftEye, 0.001f),
                 _phases
             );
         }

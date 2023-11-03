@@ -8,7 +8,7 @@ using System;
 public static class StageStatic {
     public static Dictionary<string, GameObject> GameObjects;
     public static Dictionary<string, AudioSource> Audios;
-    public static ViveSR.anipal.Eye.EyeDataCol EyeDataCol;
+    public static EyeDataCol EyeDataCol;
     public static Vector3 startingCameraPosition, startingCameraRotation;
     public static bool hasActiveUser = false;
     // Stores if the dartboard will be positioned relative to the world (val: true) or user (val: false)
@@ -40,13 +40,14 @@ public static class StageStatic {
         moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
             GameObjects["instructions"], new Vector3(0, 0, (float)-distance));
     }
-
-    // Handles the movement of the dartboard
-    // Inputs:
-    // distance - the distance of the dartboard from the user
-    // visualAngle - the size of the dartboard, in terms of visual angle (degrees)
-    // xAngle - the horizontal position of the dartboard, in visual angle (degrees)
-    // yAngle - the vertical position of the dartboard, in visual angle (degrees)
+    
+    /// <summary>
+    /// Handles the movement of the dartboard
+    /// </summary>
+    /// <param name="distance">the distance of the dartboard from the user</param>
+    /// <param name="visualAngle">the size of the dartboard, in terms of visual angle (degrees)</param>
+    /// <param name="xAngle">the horizontal position of the dartboard, in visual angle (degrees)</param>
+    /// <param name="yAngle">the vertical position of the dartboard, in visual angle (degrees)</param>
     public static void moveDartboardTo(double distance, double visualAngle, double xAngle, double yAngle) {
         if (!relativeToWorld) {
             moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
@@ -57,7 +58,13 @@ public static class StageStatic {
         }
     }
 
-    // Used for start button / instructions - moves them right in front of the user, at the specified distance
+    /// <summary>
+    /// Used for start button / instructions - moves them right in front of the user, at the specified distance
+    /// </summary>
+    /// <param name="cameraPos">The current camera position</param>
+    /// <param name="cameraAng">The current camera angle</param>
+    /// <param name="obj">The object to move into view</param>
+    /// <param name="distance">The distance to move the object to away from the camera</param>
     private static void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
         obj.transform.eulerAngles = cameraAng;
         distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, cameraAng.z) * distance;
@@ -83,7 +90,8 @@ public static class StageStatic {
     }
     
     // Used to set the IPD to a certain amount (by the IPD stage)
-    public static void setIPD(float ipd) {
-        IPD = ipd;
+    public static void changeIPDBy(float dx) {
+        IPD += dx;
+        IPD = Math.Max(0, IPD);
     }
 }

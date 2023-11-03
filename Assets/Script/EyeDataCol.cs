@@ -199,9 +199,6 @@ namespace ViveSR
                 private static void EyeCallback(ref EyeData_v2 eye_data)
                 {
                     eyeData = eye_data;
-
-
-
                 }
             }
         }
