@@ -6,7 +6,6 @@ using ViveSR.anipal.Eye;
 using System;
 
 public class EyeGazeTransform : MonoBehaviour {
-    // Start is called before the first frame update
     public GameObject left;
     public GameObject right;
     public GameObject startButton;
@@ -58,7 +57,7 @@ public class EyeGazeTransform : MonoBehaviour {
 
     private void SetExperiment(bool usingVRHeadset, DartboardPositioning positioning, 
         DartboardMovementType movementType, bool testIpd, bool usingLeftEyeForIpdTest, double ipd) {
-        StageStatic.hasActiveUser = usingVRHeadset;
+        StageStatic.HasActiveUser = usingVRHeadset;
         _dartboardPositioning = positioning;
         _dartboardMovementType = movementType;
         _usingLeftEye = usingLeftEyeForIpdTest;
@@ -67,7 +66,7 @@ public class EyeGazeTransform : MonoBehaviour {
     }
     
     private void StartExperiment() {
-        StageStatic.relativeToWorld = _dartboardPositioning switch {
+        StageStatic.RelativeToWorld = _dartboardPositioning switch {
             DartboardPositioning.Chinrest => false,
             DartboardPositioning.FixedRelativeToHead => false,
             DartboardPositioning.FixedRelativeToWorld => true,
@@ -78,17 +77,17 @@ public class EyeGazeTransform : MonoBehaviour {
             DartboardMovementType.ChangingSize => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.findThreshold(0, 0, 2, 5, 80, false)
+                ImportantStages.FindThreshold(0, 0, 2, 5, 80, false)
             ),
             DartboardMovementType.ChangingDistance => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.findThreshold(0, 0, 2, 5, 80, true)
+                ImportantStages.FindThreshold(0, 0, 2, 5, 80, true)
             ),
             DartboardMovementType.TargetMovingAndChangingDistance => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.movingTargetChangingDis(5, 20, 20,
+                ImportantStages.MovingTargetChangingDis(5, 20, 20,
                     t => 50 + 10 * Math.Sin(t * 2 * Math.PI/5),
                     t => -30 + 60 * (t/20),
                     t => 30 - 60 * (t/20)
@@ -97,7 +96,7 @@ public class EyeGazeTransform : MonoBehaviour {
             DartboardMovementType.TargetMovingAndChangingSize => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.movingTargetChangingSize(5, 20, 20,
+                ImportantStages.MovingTargetChangingSize(5, 20, 20,
                     t => 50 + 10 * Math.Sin(t * 2 * Math.PI/5),
                     t => -30 + 60 * (t/20),
                     t => 30 - 60 * (t/20)
@@ -113,11 +112,11 @@ public class EyeGazeTransform : MonoBehaviour {
             );
         }
 
-        _phases.start();
+        _phases.Start();
     }
 
     private void Update() {
-        if (!_phases.finished()) _phases.update();
+        if (!_phases.Finished()) _phases.Update();
     }
 
     private enum DartboardPositioning {

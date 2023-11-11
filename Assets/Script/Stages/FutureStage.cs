@@ -1,22 +1,49 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using ViveSR.anipal.Eye;
 using System;
+
+/// <summary>
+/// A stage which only defines itself when it is ready to start (to prevent lag)
+/// </summary>
 public class FutureStage : Stage {
-    private Func<Stage> stage;
-    private Stage actualStage;
+    /// <summary>
+    /// The method which creates and returns the stage once it is ready
+    /// </summary>
+    private readonly Func<Stage> _stage;
+    /// <summary>
+    /// Stores the stage once the Start method is called
+    /// </summary>
+    private Stage _actualStage;
+    
+    /// <summary>
+    /// Constructor which stores the stage function
+    /// </summary>
+    /// <param name="stage">The stage to store</param>
     public FutureStage(Func<Stage> stage) {
-        this.stage = stage;
+        _stage = stage;
     }
-    public override void start() {
-        actualStage = stage();
-        actualStage.start();
+    
+    /// <summary>
+    /// Defines the stage and starts it
+    /// </summary>
+    public override void Start() {
+        _actualStage = _stage();
+        _actualStage.Start();
     }
-    public override void update() {
-        if (!actualStage.finished()) actualStage.update();
+    
+    /// <summary>
+    /// Updates the stage
+    /// </summary>
+    public override void Update() {
+        if (!_actualStage.Finished()) _actualStage.Update();
     }
-    public override bool finished() { return actualStage.finished(); }
-    public override void end() { actualStage.end(); }
+    
+    /// <summary>
+    /// Checks if the stage is finished
+    /// </summary>
+    /// <returns>True if the stage is finished and false otherwise</returns>
+    public override bool Finished() { return _actualStage.Finished(); }
+    
+    /// <summary>
+    /// Runs the End method of the stage
+    /// </summary>
+    public override void End() { _actualStage.End(); }
 }
