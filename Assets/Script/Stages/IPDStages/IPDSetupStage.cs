@@ -22,7 +22,7 @@ public class IPDSetupStage : Stage
     /// <param name="usingLeftEye">True if the user is using their left eye and false if they are using their right</param>
     /// <param name="dx">The amount to change the IPD by every frame that the user is giving input</param>
     /// <param name="distance">Optional: the distance away from the user the dartboard should be</param>
-    public IPDSetupStage(bool usingLeftEye, float dx, float distance=10) {
+    public IPDSetupStage(bool usingLeftEye, float dx, float distance=6) {
         _usingLeftEye = usingLeftEye;
         _distance = distance;
         _dx = dx;
@@ -42,6 +42,20 @@ public class IPDSetupStage : Stage
     /// </summary>
     public override void Update() {
         StageStatic.moveDartboardTo(_distance, 5, 0, 0);
+
+        // Enable eye data collection here
+        if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0))
+        {
+            StageStatic.GameObjects["left"].SetActive(true);
+            StageStatic.GameObjects["left"].transform.position = StageStatic.EyeDataCol.worldPosL;
+        }
+        if (StageStatic.EyeDataCol.worldPosR != new Vector3(0, 0, 0))
+        {
+            StageStatic.GameObjects["right"].SetActive(true);
+            StageStatic.GameObjects["right"].transform.position = StageStatic.EyeDataCol.worldPosR;
+        }
+
+
         float change = 0;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
             change = -_dx;
