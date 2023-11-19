@@ -116,7 +116,10 @@ public class EyeGazeTransform : MonoBehaviour {
     }
 
     private void Update() {
-        if (!_phases.Finished()) _phases.Update();
+        if (!_phases.Finished()) {
+            _phases.Update();
+            StageStatic.UpdateGazeRays();
+        }
     }
 
     private enum DartboardPositioning {

@@ -22,7 +22,7 @@ public class IPDSetupStage : Stage
     /// <param name="usingLeftEye">True if the user is using their left eye and false if they are using their right</param>
     /// <param name="dx">The amount to change the IPD by every frame that the user is giving input</param>
     /// <param name="distance">Optional: the distance away from the user the dartboard should be</param>
-    public IPDSetupStage(bool usingLeftEye, float dx, float distance=10) {
+    public IPDSetupStage(bool usingLeftEye, float dx, float distance=6) {
         _usingLeftEye = usingLeftEye;
         _distance = distance;
         _dx = dx;

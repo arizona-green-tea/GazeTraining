@@ -146,4 +146,19 @@ public static class StageStatic {
         IPD += dx;
         IPD = Math.Max(0, IPD);
     }
+
+    /// <summary>
+    /// Updates the gaze rays shown to the user based on user's left/right gaze direction
+    /// </summary>
+    public static void UpdateGazeRays() {
+        if (EyeDataCol.worldPosL != new Vector3(0, 0, 0)) {
+            GameObjects["left"].SetActive(true);
+            GameObjects["left"].transform.position = EyeDataCol.worldPosL;
+        } else GameObjects["left"].SetActive(false);
+        
+        if (EyeDataCol.worldPosR != new Vector3(0, 0, 0)) {
+            GameObjects["right"].SetActive(true);
+            GameObjects["right"].transform.position = EyeDataCol.worldPosR;
+        } else GameObjects["right"].SetActive(false);
+    }
 }

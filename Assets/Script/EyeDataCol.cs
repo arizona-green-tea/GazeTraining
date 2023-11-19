@@ -134,11 +134,13 @@ namespace ViveSR
                     
 
                     camL = camC;
+                    Vector3 oldL = camL.transform.position;
                     camL.transform.position = camL.transform.TransformPoint(-StageStatic.IPD, 0, 0);
                     // camL.transform.position += new Vector3(-StageStatic.IPD, 0, 0);
                     Vector3 GazeDirectionTestL = camL.transform.TransformDirection(L_Direction);
                     if (Physics.Raycast(camL.transform.position, GazeDirectionTestL, out hitInfoL, 1000))
                     {
+                        Debug.Log("OldL: " + oldL + " NewL: " + camL.transform.position + " Adjusted by: " + -StageStatic.IPD);
                         lObjectName = hitInfoL.collider.gameObject.name;
                         screenPosL = camL.WorldToScreenPoint(hitInfoL.point, Camera.MonoOrStereoscopicEye.Mono);
                         worldPosL = hitInfoL.point;
@@ -146,11 +148,13 @@ namespace ViveSR
                     }
 
                     camR = camC;
+                    Vector3 oldR = camR.transform.position;
                     camR.transform.position = camR.transform.TransformPoint(StageStatic.IPD, 0, 0);
                     // camR.transform.position += new Vector3(StageStatic.IPD, 0, 0);
                     Vector3 GazeDirectionTestR = camR.transform.TransformDirection(R_Direction);
                     if (Physics.Raycast(camR.transform.position, GazeDirectionTestR, out hitInfoR, 1000))
                     {
+                        Debug.Log("OldR: " + oldR + " NewR: " + camR.transform.position + " Adjusted by: " + -StageStatic.IPD);
                         rObjectName = hitInfoR.collider.gameObject.name;
                         screenPosR = camR.WorldToScreenPoint(hitInfoR.point, Camera.MonoOrStereoscopicEye.Mono);
                         worldPosR = hitInfoR.point;
