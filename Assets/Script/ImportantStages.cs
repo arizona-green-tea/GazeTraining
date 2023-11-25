@@ -23,9 +23,10 @@ public static class ImportantStages {
     /// <param name="failure">The audio to play if the stage is a fail</param>
     /// <returns>The stage with the GeneralTargetStage first and the audio after</returns>
     public static Stage PlayAudioFromResult(GeneralTargetStage targetStage, AudioSource success, AudioSource failure) {
-        return new StageList(
-            targetStage,
-            new DecisionStage(() => targetStage.UserSucceeded, PlayAudio(success), PlayAudio(failure))
+        return new DecisionStage(
+            () => targetStage.UserSucceeded, 
+            PlayAudio(success), 
+            PlayAudio(failure)
         );
     }
     
@@ -40,14 +41,8 @@ public static class ImportantStages {
     /// <returns>The binary search stage</returns>
     private static Stage BinarySearch(GeneralTargetStage targetStage, double minSize, double maxSize, double precision, bool changeDistance) {
         var newStage = changeDistance ? targetStage.GetWithSizeAdjustDistance((minSize + maxSize)/2) : targetStage.GetWithSize((minSize + maxSize)/2);
-        if (maxSize - minSize < precision)
-        {
-            return new StageList(
-                new CodeSegStage(() => _binarySearchResult = newStage.GetSize())
-                // PlayAudio(StageStatic.Audios["smallestVisualAngleAudio"]),
-                // PlayAudio(StageStatic.Audios["" + Math.Truncate(newStage.getSize())]),
-                // PlayAudio(StageStatic.Audios["degreesAudio"])
-            );
+        if (maxSize - minSize < precision) {
+            return new CodeSegStage(() => _binarySearchResult = newStage.GetSize());
         }
         return new StageList(
             newStage,
@@ -124,7 +119,7 @@ public static class ImportantStages {
             ),
             new FutureStage(() => ThreeDownOneUp(
                 new GeneralTargetStage(100, 10, xAng, yAng, minTimeToView, timePerAttempt),
-                _binarySearchResult, percentageCertainty/100, 0, new List<double>(),
+                Math.Min(3 + _binarySearchResult, 50), percentageCertainty/100, 0, new List<double>(),
                 changingDistance
             ))
         );
@@ -142,13 +137,24 @@ public static class ImportantStages {
     /// <returns>The stage with the target moving around</returns>
     public static Stage MovingTargetChangingDis(double userViewTime, double maxTime, double stSize, Func<double, double> distance, Func<double, double> xAng, Func<double, double> yAng) {
         var mainStage = new GeneralTargetStage(distance(0), stSize, xAng(0), yAng(0), userViewTime, maxTime);
-        return new SimultaneousStage(
-            mainStage,
-            new CodeSegStage(() => {}, () => {
-                mainStage.SetDistance(distance(mainStage.TimeElapsedTotal));
-                mainStage.SetXAng(xAng(mainStage.TimeElapsedTotal));
-                mainStage.SetYAng(yAng(mainStage.TimeElapsedTotal));
-            }, () => mainStage.Finished())
+        return new StageList(
+            new SimultaneousStage(
+                mainStage,
+                new CodeSegStage(() => {}, () => {
+                    mainStage.SetDistance(distance(mainStage.TimeElapsedTotal));
+                    mainStage.SetXAng(xAng(mainStage.TimeElapsedTotal));
+                    mainStage.SetYAng(yAng(mainStage.TimeElapsedTotal));
+                }, () => mainStage.Finished())
+            ),
+            new DecisionStage(
+                () => mainStage.UserSucceeded,
+                new FutureStage(() => new StageList(
+                    PlayAudio(StageStatic.Audios["movingCompletionAudio"]),
+                    PlayAudio(StageStatic.Audios["" + Math.Truncate(mainStage.TimeElapsedTotal)]),
+                    PlayAudio(StageStatic.Audios["secondsAudio"])
+                )),
+                new FutureStage(() => PlayAudio(StageStatic.Audios["failedAudio"]))
+            )
         );
     }
     
@@ -164,13 +170,24 @@ public static class ImportantStages {
     /// <returns>The stage with the target moving around</returns>
     public static Stage MovingTargetChangingSize(double userViewTime, double maxTime, double stDistance, Func<double, double> size, Func<double, double> xAng, Func<double, double> yAng) {
         var mainStage = new GeneralTargetStage(stDistance, size(0), xAng(0), yAng(0), userViewTime, maxTime);
-        return new SimultaneousStage(
-            mainStage,
-            new CodeSegStage(() => {}, () => {
-                mainStage.SetSize(size(mainStage.TimeElapsedTotal));
-                mainStage.SetXAng(xAng(mainStage.TimeElapsedTotal));
-                mainStage.SetYAng(yAng(mainStage.TimeElapsedTotal));
-            }, () => mainStage.Finished())
+        return new StageList(
+            new SimultaneousStage(
+                mainStage,
+                new CodeSegStage(() => {}, () => {
+                    mainStage.SetSize(size(mainStage.TimeElapsedTotal));
+                    mainStage.SetXAng(xAng(mainStage.TimeElapsedTotal));
+                    mainStage.SetYAng(yAng(mainStage.TimeElapsedTotal));
+                }, () => mainStage.Finished())
+            ),
+            new DecisionStage(
+                () => mainStage.UserSucceeded,
+                new FutureStage(() => new StageList(
+                    PlayAudio(StageStatic.Audios["movingCompletionAudio"]),
+                    PlayAudio(StageStatic.Audios["" + Math.Truncate(mainStage.TimeElapsedTotal)]),
+                    PlayAudio(StageStatic.Audios["secondsAudio"])
+                )),
+                new FutureStage(() => PlayAudio(StageStatic.Audios["failedAudio"]))
+            )
         );
     }
 }

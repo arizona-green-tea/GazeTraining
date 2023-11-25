@@ -20,9 +20,9 @@ public class EyeGazeTransform : MonoBehaviour {
         
         // BEGIN: INSTRUCTIONS SPECIFIC TO EXPERIMENT
         SetExperiment(
-            true, // <-- true if using the VR headset (in-person), false otherwise (remote testing)
+            false, // <-- true if using the VR headset (in-person), false otherwise (remote testing)
             DartboardPositioning.Chinrest, 
-            DartboardMovementType.TargetMovingAndChangingDistance,
+            DartboardMovementType.ChangingSize,
             true, // <-- Input whether or not you want to use the IPD calculator program.
             true, // <-- true if user will use left eye for the IPD test, false otherwise
             -1 // <-- This is the IPD. If known, input here. Otherwise, put -1.
@@ -77,12 +77,12 @@ public class EyeGazeTransform : MonoBehaviour {
             DartboardMovementType.ChangingSize => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.FindThreshold(0, 0, 2, 5, 80, false)
+                ImportantStages.FindThreshold(0, 0, 5, 15, 80, false)
             ),
             DartboardMovementType.ChangingDistance => new StageList(
                 new StartButtonStage(),
                 new InstructionStage(),
-                ImportantStages.FindThreshold(0, 0, 2, 5, 80, true)
+                ImportantStages.FindThreshold(0, 0, 5, 15, 80, true)
             ),
             DartboardMovementType.TargetMovingAndChangingDistance => new StageList(
                 new StartButtonStage(),

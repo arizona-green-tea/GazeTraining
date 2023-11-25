@@ -78,7 +78,7 @@ public static class StageStatic {
     /// <param name="distance">The distance away from the user to move the instructions to</param>
     public static void moveInstructionsTo(double distance) {
         moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-            GameObjects["instructions"], new Vector3(0, 0, (float)-distance));
+            GameObjects["instructions"], new Vector3(5, 0, (float)-distance));
     }
     
     /// <summary>

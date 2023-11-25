@@ -6,7 +6,7 @@ using System;
 /// </summary>
 public class GeneralTargetStage : Stage {
     public double TimeElapsedTotal;
-    private double _timeElapsedUser, _distance, _size, _xAng, _yAng;
+    private double _timeElapsedUser, _distance, _size, _xAng, _yAng, _maxTimeSuccess;
     private readonly double _userViewTime, _maxTime; 
     public bool UserSucceeded;
     private Vector3 _stCamPos, _stCamRot;
@@ -27,6 +27,7 @@ public class GeneralTargetStage : Stage {
         _yAng = yAng;
         _userViewTime = userViewTime;
         _maxTime = maxTime;
+        _maxTimeSuccess = 0;
     }
     
     /// <summary>
@@ -122,6 +123,7 @@ public class GeneralTargetStage : Stage {
             _timeElapsedUser = -0.1f;
         } else {
             _timeElapsedUser += Time.deltaTime;
+            _maxTimeSuccess = Math.Max(_maxTimeSuccess, _timeElapsedUser);
             if (TimePassedNumber()) {
                 StageStatic.stopAllAudio();
                 StageStatic.Audios["" + (_userViewTime - Math.Truncate(_timeElapsedUser))].Play();
@@ -134,6 +136,12 @@ public class GeneralTargetStage : Stage {
     /// </summary>
     /// <returns>Size of the dartboard</returns>
     public double GetSize() { return _size; }
+
+    /// <summary>
+    /// Gets the maximum amount of time that the user successfully gazed for
+    /// </summary>
+    /// <returns>Max time user gazed at dartboard for</returns>
+    public double MaxTimeUserGazed() { return _maxTimeSuccess; }
     
     /// <summary>
     /// Checks if the time just passed a whole number
