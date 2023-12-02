@@ -63,7 +63,7 @@ public static class ImportantStages {
     /// <param name="currentSuccesses">The current number of successes in a row</param>
     /// <param name="failedPlaces">All of the distances/sizes where the user failed</param>
     /// <param name="changeDistance">True if the distance should change, false if size should change</param>
-    /// <returns></returns>
+    /// <returns>The three down one up stage</returns>
     private static Stage ThreeDownOneUp(GeneralTargetStage targetStage, double currentSize, double percentage, int currentSuccesses, List<double> failedPlaces, bool changeDistance) {
         var newStage = changeDistance ? targetStage.GetWithSizeAdjustDistance(currentSize) : targetStage.GetWithSize(currentSize);
         const double negativeStep = 1;
