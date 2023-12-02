@@ -22,7 +22,7 @@ public class IPDSetupStage : Stage
     /// <param name="usingLeftEye">True if the user is using their left eye and false if they are using their right</param>
     /// <param name="dx">The amount to change the IPD by every frame that the user is giving input</param>
     /// <param name="distance">Optional: the distance away from the user the dartboard should be</param>
-    public IPDSetupStage(bool usingLeftEye, float dx, float distance=6) {
+    public IPDSetupStage(bool usingLeftEye, float dx, float distance=20) {
         _usingLeftEye = usingLeftEye;
         _distance = distance;
         _dx = dx;
@@ -34,13 +34,13 @@ public class IPDSetupStage : Stage
     public override void Start() {
         StageStatic.GameObjects["startButton"].SetActive(false);
         StageStatic.GameObjects["instructions"].SetActive(false);
-        StageStatic.GameObjects["target"].SetActive(true);
     }
 
     /// <summary>
     /// Adjusts position/size/distance of dartboard and adjusts IPD based on user input
     /// </summary>
     public override void Update() {
+        StageStatic.GameObjects["target"].SetActive(true);
         StageStatic.moveDartboardTo(_distance, 5, 0, 0);
         float change = 0;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
