@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using UnityEngine;
 
 public class IPDSetupStage : Stage
@@ -14,7 +15,9 @@ public class IPDSetupStage : Stage
     /// <summary>
     /// Stores true if the user is using their left eye and false if they are using their right
     /// </summary>
-    private readonly bool _usingLeftEye;
+    private bool _usingLeftEye;
+
+    private StreamWriter sw;
 
     /// <summary>
     /// Constructor which stores all parameters
@@ -41,7 +44,7 @@ public class IPDSetupStage : Stage
     /// Adjusts position/size/distance of dartboard and adjusts IPD based on user input
     /// </summary>
     public override void Update() {
-        StageStatic.moveDartboardTo(_distance, 5, 0, 0);
+        // StageStatic.moveDartboardTo(_distance, 5, 0, 0);
 
         // Enable eye data collection here
         if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0))
@@ -55,6 +58,43 @@ public class IPDSetupStage : Stage
             StageStatic.GameObjects["right"].transform.position = StageStatic.EyeDataCol.worldPosR;
         }
 
+        if (Input.GetKeyDown(KeyCode.Q)) {
+            Debug.Log("switching eye, using left eye =" + _usingLeftEye);
+            //StageStatic.GameObjects["camera"].GetComponent<Camera>().stereoTargetEye = StereoTargetEyeMask.Left;
+            MeshRenderer renderer = GameObject.Find("Cube").GetComponent<MeshRenderer>();
+            renderer.material.SetInteger("_LeftOpacity", 1);
+            renderer.material.SetInteger("_RightOpacity", 0);
+            _usingLeftEye = true;
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            Debug.Log("switching eye, using right eye =" + _usingLeftEye);
+            //StageStatic.GameObjects["camera"].GetComponent<Camera>().stereoTargetEye = StereoTargetEyeMask.Right;
+            MeshRenderer renderer = GameObject.Find("Cube").GetComponent<MeshRenderer>();
+            renderer.material.SetInteger("_LeftOpacity", 0);
+            renderer.material.SetInteger("_RightOpacity", 1);
+            _usingLeftEye = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            Debug.Log("switching eye, using both eyes");
+            //StageStatic.GameObjects["camera"].GetComponent<Camera>().stereoTargetEye = StereoTargetEyeMask.Both;
+            MeshRenderer renderer = GameObject.Find("Cube").GetComponent<MeshRenderer>();
+            renderer.material.SetInteger("_LeftOpacity", 0);
+            renderer.material.SetInteger("_RightOpacity", 0);
+        }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("confirmed ipd");
+            string textAll = StageStatic.leftIPD + " " + StageStatic.rightIPD;
+            sw = File.AppendText(Application.persistentDataPath + System.DateTime.Now.ToString("MM-dd-yyyy") + "_" + "IPD.txt");
+
+            sw.Write(textAll);
+        }
+
 
         float change = 0;
         if (Input.GetKeyDown(KeyCode.LeftArrow)) {
@@ -62,8 +102,12 @@ public class IPDSetupStage : Stage
         } else if (Input.GetKeyDown(KeyCode.RightArrow)) {
             change = _dx;
         }
-        if (_usingLeftEye) change *= -1;
-        StageStatic.changeIPDBy(change);
+
+        if (_usingLeftEye) {
+            StageStatic.changeLeftIPDBy(change);
+        } else {
+            StageStatic.changeRightIPDBy(change);
+        }
     }
     
     /// <summary>

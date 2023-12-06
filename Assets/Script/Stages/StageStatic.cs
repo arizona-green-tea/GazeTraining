@@ -39,7 +39,8 @@ public static class StageStatic {
     /// <summary>
     /// Stores the user's IPD value
     /// </summary>
-    public static float IPD = 0.03f;
+    public static float leftIPD = 0.03f;
+    public static float rightIPD = 0;
 
     /// <summary>
     /// Sets all of the necessary information about the experiment setup
@@ -89,13 +90,21 @@ public static class StageStatic {
     /// <param name="xAngle">the horizontal position of the dartboard, in visual angle (degrees)</param>
     /// <param name="yAngle">the vertical position of the dartboard, in visual angle (degrees)</param>
     public static void moveDartboardTo(double distance, double visualAngle, double xAngle, double yAngle) {
-        if (!RelativeToWorld) {
-            moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
-                GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
-        } else {
-            moveToView(StartingCameraPosition, StartingCameraRotation,
-                GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
+        if (!RelativeToWorld)
+        {
+           moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
+               GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
         }
+        else
+        {
+           moveToView(StartingCameraPosition, StartingCameraRotation,
+               GameObjects["target"], new Vector3(0, 0, (float)-distance), visualAngle, -xAngle, yAngle);
+        }
+    }
+
+    public static void moveSetUpEnvironment(double distance){
+        moveToView(GameObjects["camera"].transform.position, GameObjects["camera"].transform.localRotation.eulerAngles,
+            GameObjects["setupenvironment"], new Vector3(0, 0, (float)-distance));
     }
 
     /// <summary>
@@ -107,7 +116,7 @@ public static class StageStatic {
     /// <param name="distance">The distance to move the object to away from the camera</param>
     private static void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance) {
         obj.transform.eulerAngles = cameraAng;
-        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, cameraAng.z) * distance;
+        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y, cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
     }
 
@@ -122,28 +131,40 @@ public static class StageStatic {
     /// <param name="xAng">The angle to move the dartboard to on the x axis (degrees)</param>
     /// <param name="yAng">The angle to move the dartboard to on the y axis (degrees)</param>
     private static void moveToView(Vector3 cameraPos, Vector3 cameraAng, GameObject obj, Vector3 distance, double visualAngle, double xAng, double yAng) {
-        if (xAng == 0 && yAng == 0) {
+        if (xAng == 0 && yAng == 0)
+        {
             moveToView(cameraPos, cameraAng, obj, distance);
         }
-        
-        obj.transform.LookAt(cameraPos);
 
-        distance += new Vector3((float)(Math.Abs(distance.z) * Math.Tan(xAng * Math.PI/180)), (float)(Math.Abs(distance.z) * Math.Tan(yAng * Math.PI/180)), 0);
-        distance *= Math.Abs(distance.z)/distance.magnitude;
-        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y + 180, -cameraAng.z) * distance;
+        obj.transform.LookAt(cameraPos);
+        distance += new Vector3((float)(Math.Abs(distance.z) * Math.Tan(xAng * Math.PI / 180)), (float)(Math.Abs(distance.z) * Math.Tan(yAng * Math.PI / 180)), 0);
+        distance *= Math.Abs(distance.z) / distance.magnitude;
+        distance = Quaternion.Euler(-cameraAng.x, cameraAng.y, -cameraAng.z) * distance;
         obj.transform.position = cameraPos + distance;
 
         var origSize = 54.8f;
-        var neededSize = (float)Math.Tan(visualAngle * Math.PI/180 * 1/2) * distance.magnitude * 2;
-        obj.transform.localScale = new Vector3(neededSize/origSize, neededSize/origSize, 1);
+        var neededSize = (float)Math.Tan(visualAngle * Math.PI / 180 * 1 / 2) * distance.magnitude * 2;
+        obj.transform.localScale = new Vector3(neededSize / origSize, neededSize / origSize, 1);
     }
     
     /// <summary>
-    /// Used to move the IPD by a certain amount (by the IPD stage)
+    /// Used to move the left IPD by a certain amount (by the IPD stage)
     /// </summary>
     /// <param name="dx">The amount to change the IPD by</param>
-    public static void changeIPDBy(float dx) {
-        IPD += dx;
-        IPD = Math.Max(0, IPD);
+    public static void changeLeftIPDBy(float dx) {
+        leftIPD += dx;
+        leftIPD = Math.Max(0, leftIPD);
     }
+
+    /// <summary>
+    /// Used to move the right IPD by a certain amount (by the IPD stage)
+    /// </summary>
+    /// <param name="dx">The amount to change the IPD by</param>
+    public static void changeRightIPDBy(float dx)
+    {
+        rightIPD += dx;
+        rightIPD = Math.Max(0, rightIPD);
+    }
+
+
 }

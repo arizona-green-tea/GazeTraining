@@ -89,16 +89,20 @@ public class GeneralTargetStage : Stage {
         _timeElapsedUser = 0;
         StageStatic.StartingCameraPosition = StageStatic.GameObjects["camera"].transform.position;
         StageStatic.StartingCameraRotation = StageStatic.GameObjects["camera"].transform.localRotation.eulerAngles;
-        StageStatic.moveDartboardTo(_distance, _size, _xAng, _yAng);
+        StageStatic.moveSetUpEnvironment(_distance);
+        // StageStatic.moveDartboardTo(_distance, _size, _xAng, _yAng);
     }
     
     /// <summary>
+    /// 
+    /// 
+    /// 
     /// Updates timer, dartboard position, and checks if the user is looking at the dartboard or pressing A
     /// </summary>
     public override void Update() {
         TimeElapsedTotal += Time.deltaTime;
 
-        StageStatic.moveDartboardTo(_distance, _size, _xAng, _yAng);
+        // StageStatic.moveDartboardTo(_distance, _size, _xAng, _yAng);
 
         if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0)) {
             StageStatic.GameObjects["left"].SetActive(true);

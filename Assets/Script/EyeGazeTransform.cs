@@ -10,6 +10,8 @@ public class EyeGazeTransform : MonoBehaviour {
     public GameObject right;
     public GameObject startButton;
     public GameObject target;
+
+    public GameObject setupEnvironment;
     private StageList _phases;
     private DartboardPositioning _dartboardPositioning;
     private DartboardMovementType _dartboardMovementType;
@@ -47,6 +49,7 @@ public class EyeGazeTransform : MonoBehaviour {
             {"startButton", startButton},
             {"instructions", instructions},
             {"target", target},
+            {"setupenvironment", setupEnvironment}
         };
         var audios = new Dictionary<string, AudioSource>();
         foreach (var aud in allAudio) {
@@ -61,7 +64,10 @@ public class EyeGazeTransform : MonoBehaviour {
         _dartboardPositioning = positioning;
         _dartboardMovementType = movementType;
         _usingLeftEye = usingLeftEyeForIpdTest;
-        if (ipd > 0) StageStatic.IPD = (float) ipd;
+        if (ipd > 0) {
+            StageStatic.leftIPD = (float)ipd;
+            StageStatic.rightIPD = (float)ipd;
+        }
         _testIpd = testIpd;
     }
     
