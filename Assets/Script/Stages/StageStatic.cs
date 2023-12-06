@@ -39,7 +39,7 @@ public static class StageStatic {
     /// <summary>
     /// Stores the user's IPD value
     /// </summary>
-    public static float IPD = 0.03f;
+    public static float IPD = 0.0f;
 
     /// <summary>
     /// Sets all of the necessary information about the experiment setup
