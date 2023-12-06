@@ -39,8 +39,7 @@ public static class StageStatic {
     /// <summary>
     /// Stores the user's IPD value
     /// </summary>
-    public static float leftIPD = 0.03f;
-    public static float rightIPD = 0;
+    public static float IPD = 0.03f;
 
     /// <summary>
     /// Sets all of the necessary information about the experiment setup
@@ -148,22 +147,12 @@ public static class StageStatic {
     }
     
     /// <summary>
-    /// Used to move the left IPD by a certain amount (by the IPD stage)
+    /// Used to move the IPD by a certain amount (by the IPD stage)
     /// </summary>
     /// <param name="dx">The amount to change the IPD by</param>
-    public static void changeLeftIPDBy(float dx) {
-        leftIPD += dx;
-        leftIPD = Math.Max(0, leftIPD);
-    }
-
-    /// <summary>
-    /// Used to move the right IPD by a certain amount (by the IPD stage)
-    /// </summary>
-    /// <param name="dx">The amount to change the IPD by</param>
-    public static void changeRightIPDBy(float dx)
-    {
-        rightIPD += dx;
-        rightIPD = Math.Max(0, rightIPD);
+    public static void changeIPDBy(float dx) {
+        IPD += dx;
+        IPD = Math.Max(0, IPD);
     }
 
 

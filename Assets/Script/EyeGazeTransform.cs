@@ -39,7 +39,8 @@ public class EyeGazeTransform : MonoBehaviour {
         var cameraRig = GameObject.Find("Camera");
         var audioGameObject = GameObject.Find("AllAudio");
         var allAudio = audioGameObject.GetComponentsInChildren<AudioSource>();
-        
+        var coverEye = GameObject.Find("CoverEye");
+
         var eyeDataCol = GetComponent<EyeDataCol>();
 
         var gameObjects = new Dictionary<string, GameObject>{
@@ -49,7 +50,8 @@ public class EyeGazeTransform : MonoBehaviour {
             {"startButton", startButton},
             {"instructions", instructions},
             {"target", target},
-            {"setupenvironment", setupEnvironment}
+            {"setupenvironment", setupEnvironment},
+            {"coverEye", coverEye}
         };
         var audios = new Dictionary<string, AudioSource>();
         foreach (var aud in allAudio) {
@@ -65,8 +67,7 @@ public class EyeGazeTransform : MonoBehaviour {
         _dartboardMovementType = movementType;
         _usingLeftEye = usingLeftEyeForIpdTest;
         if (ipd > 0) {
-            StageStatic.leftIPD = (float)ipd;
-            StageStatic.rightIPD = (float)ipd;
+            StageStatic.IPD = (float)ipd;
         }
         _testIpd = testIpd;
     }
