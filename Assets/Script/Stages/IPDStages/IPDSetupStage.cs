@@ -52,11 +52,13 @@ public class IPDSetupStage : Stage
         // Enable eye data collection here
         if (StageStatic.EyeDataCol.worldPosL != new Vector3(0, 0, 0))
         {
-            StageStatic.GameObjects["left"].transform.position = StageStatic.EyeDataCol.worldPosL;
+            StageStatic.GameObjects["left"].transform.position = StageStatic.EyeDataCol.camL.transform.position
+                + StageStatic.EyeDataCol.camL.transform.TransformDirection(StageStatic.EyeDataCol.L_Direction) * 150;
         }
         if (StageStatic.EyeDataCol.worldPosR != new Vector3(0, 0, 0))
         {
-            StageStatic.GameObjects["right"].transform.position = StageStatic.EyeDataCol.worldPosR;
+            StageStatic.GameObjects["right"].transform.position = StageStatic.EyeDataCol.camR.transform.position 
+                + StageStatic.EyeDataCol.camR.transform.TransformDirection(StageStatic.EyeDataCol.R_Direction) * 150;
         }
 
         if (Input.GetKeyDown(KeyCode.Q)) {
