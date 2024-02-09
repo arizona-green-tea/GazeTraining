@@ -10,6 +10,7 @@ public class EyeGazeTransform : MonoBehaviour {
     public GameObject right;
     public GameObject startButton;
     public GameObject target;
+    public string name = "hi";
 
     public GameObject setupEnvironment;
     private StageList _phases;
@@ -57,7 +58,7 @@ public class EyeGazeTransform : MonoBehaviour {
         foreach (var aud in allAudio) {
             audios[aud.name] = aud;
         }
-        StageStatic.setInformation(gameObjects, audios, eyeDataCol);
+        StageStatic.setInformation(gameObjects, audios, eyeDataCol, name);
     }
 
     private void SetExperiment(bool usingVRHeadset, DartboardPositioning positioning, 

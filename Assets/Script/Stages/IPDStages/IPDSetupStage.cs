@@ -17,8 +17,6 @@ public class IPDSetupStage : Stage
     /// </summary>
     private bool _usingLeftEye;
 
-    private StreamWriter sw;
-
     /// <summary>
     /// Constructor which stores all parameters
     /// </summary>
@@ -88,10 +86,33 @@ public class IPDSetupStage : Stage
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            Debug.Log("confirmed ipd");
-            string textAll = StageStatic.IPD + "";
-            sw = File.AppendText(Application.persistentDataPath + System.DateTime.Now.ToString("MM-dd-yyyy") + "_" + "IPD.txt");
-            sw.Write(textAll);
+            Debug.Log("saved " + StageStatic.IPD + " at " + Application.persistentDataPath);
+            File.Delete(Application.persistentDataPath + "/" + StageStatic.name + "_" + "IPD.txt");
+            StreamWriter sw = File.AppendText(Application.persistentDataPath + "/" + StageStatic.name + "_" + "IPD.txt");
+            sw.WriteLine(StageStatic.IPD);
+            sw.Close();
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            try
+            {
+                StreamReader sr = new StreamReader(Application.persistentDataPath + "/" + StageStatic.name + "_" + "IPD.txt");
+                StageStatic.IPD = float.Parse(sr.ReadLine());
+                Debug.Log("loaded " + StageStatic.IPD + " from " + Application.persistentDataPath);
+                sr.Close();
+            }
+            catch (FileNotFoundException e)
+            {
+                Debug.Log("You have not saved an IPD under this patient.");
+            }
+
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            StageStatic.IPD = 0;
+            Debug.Log("reset ipd");
         }
 
 

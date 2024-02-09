@@ -42,16 +42,23 @@ public static class StageStatic {
     public static float IPD = 0.0f;
 
     /// <summary>
+    /// Stores the user's name
+    /// </summary>
+    public static string name;
+
+    /// <summary>
     /// Sets all of the necessary information about the experiment setup
     /// </summary>
     /// <param name="allGameObjects">The game objects used in the experiment</param>
     /// <param name="allAudio">The audio clips used in the experiment</param>
     /// <param name="eyeDataCollection">The EyeDataCol object to get eye data from</param>
+    /// <param name="n">The name of the patient</param>
     public static void setInformation(Dictionary<string, GameObject> allGameObjects, Dictionary<string, AudioSource> allAudio,
-    EyeDataCol eyeDataCollection) {
+    EyeDataCol eyeDataCollection, string n) {
         GameObjects = allGameObjects;
         Audios = allAudio;
         EyeDataCol = eyeDataCollection;
+        name = n;
     }
 
     /// <summary>
